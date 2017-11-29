@@ -1,0 +1,101 @@
+{
+  "lab": {
+    "description": {
+      "name": "vlabs openedx platform",
+      "id": "vlabs-openedx-platform",
+      "status": "working code",
+      "discipline": [],
+      "type": "",
+      "server-side": true,
+      "integration_level": 6,
+      "developer": [
+        {
+          "name": "Sripathi Kammari",
+          "title": "",
+          "role": "Software Engineer",
+          "organization": "VLEAD",
+          "institute": "IIIT Hyderabad",
+          "web": "",
+          "department": "Software Engg Research Lab (SERL)",
+          "contact": {
+            "email": "sripathi@vlabs.ac.in",
+	    "alternate_email": "",
+            "mobile_number": "",
+            "office_number": ""
+          }
+        },
+        {
+          "name": "Mrudhvika",
+          "title": "",
+          "role": "Software Engineer",
+          "organization": "VLEAD",
+          "institute": "IIIT Hyderabad",
+          "web": "",
+          "department": "Software Engg Research Lab (SERL)",
+          "contact": {
+            "email": "mrudhvika@vlabs.ac.in",
+            "alternate_email": "",
+            "mobile_number": "",
+            "office_number": ""
+          }
+        }
+      ]
+     },
+    "build_requirements": {
+      "platform": {
+        "os": "ubuntu",
+        "osVersion": "12",
+        "arch": "x64",
+        "service_pack": "",
+        "installer": [
+        ],
+        "build_steps": {
+          "configure": [],
+          "pre_build": [],
+          "build": [
+            "cd ../;make build"
+          ],
+          "post_build": [
+            "sed -i 's_DocumentRoot /var/www_DocumentRoot /var/www/runtime_' /etc/apache2/sites-available/default",
+            "cp -R ../build/code/* /var/www/",
+            "chmod -R 755 /var/www",
+            "service apache2 restart"
+          ],
+          "status": []
+        }
+      }
+    },
+    "runtime_requirements": {
+      "platform": {
+        "os": "ubuntu",
+        "osVersion": "12",
+        "arch": "x64",
+        "servicepack": "",
+        "hosting": "dedicated",
+        "memory": {
+          "max_required": "4gb",
+          "min_required": "2gb"
+        },
+        "storage": {
+          "min_required": "10gb"
+        },
+        "installer": [
+        ],
+        "lab_actions": {
+          "init"    : [],
+          "shutdown": [],
+          "pause"   : [],
+          "resume"  : [],
+          "start"   : [],
+          "stop"    : [],
+          "backup"  : [],
+          "restore" : [],
+          "clean"   : [],
+          "stats"   : [],
+          "publish" : []
+        }
+      }
+    }
+  },
+  "template": "1.0"
+}
