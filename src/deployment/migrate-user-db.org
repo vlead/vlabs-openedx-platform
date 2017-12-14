@@ -15,7 +15,62 @@
   =Ginkgo= all the courses and user database has to be
   migrated.
   
-* Connect to database
+* Steps to migrate user database from dogwood to ginkgo
+** Restore dogwood database dump into mysql temporary database
+  1. Log into the database
+     #+BEGIN_EXAMPLE
+     mysql -u root -p
+     #+END_EXAMPLE
+  2. Create a database with name =dogwood=
+     #+BEGIN_EXAMPLE
+     mysql> create database dogwood
+     #+END_EXAMPLE
+  3. Exit from the mysql server
+     #+BEGIN_EXAMPLE
+     > exit
+     #+END_EXAMPLE
+  4. Import sql file into =dogwood= database
+     #+BEGIN_EXAMPLE
+     mysql -u root -p dogwood < dogwood-dump.sql
+     #+END_EXAMPLE
+** Steps to run user database migration script
+
+    1. Clone the repository
+       #+BEGIN_EXAMPLE
+       git clone https://github.com/vlead/vlabs-openedx-platform
+       #+END_EXAMPLE
+    2. Change directory to =vlabs-openedx-platform= and
+       checkout branch to =develop=
+       #+BEGIN_EXAMPLE
+       cd vlabs-openedx-platform
+       git checkout develop
+       #+END_EXAMPLE
+    3. Build the sources
+       #+BEGIN_EXAMPLE
+       make
+       #+END_EXAMPLE
+    4. Changed directory to deployment folder
+       #+BEGIN_EXAMPLE
+       cd build/code/deployment
+       #+END_EXAMPLE
+    5. Configure the variables =HOST= , =USER= and
+       =PASSWORD= of mysql server.
+       as 
+       #+BEGIN_EXAMPLE
+       HOST="localhost"
+       USER="root"
+       PASSWORD=""
+       SRC_DB = "dogwood"
+       DEST_DB = "edxapp"
+
+       #+END_EXAMPLE
+    6. Run the script
+       #+BEGIN_EXAMPLE
+       python migrate-usr-db.py
+       #+END_EXAMPLE
+    7. If step(6) is successful delete the =dogwood= database
+* Migration Script
+** Connect to database
   This function connects to mysql database and returns the
   connection object
   #+NAME: connect-db
@@ -38,42 +93,7 @@ def connect_db(db_name):
         exit(1)
 
   #+END_SRC
-* Create database
-  This functions creates database
-  #+NAME: create-db
-  #+BEGIN_SRC python
-
-def create_database(cnx, db_name):
-    cursor = cnx.cursor()
-    try:
-        query = "create database %s" % (db_name)
-        cursor.execute(query)
-        print "database created"
-        return True
-    except MySQLdb.Error as err:
-        print "Failed creating database: {}".format(err)
-        return False
-
-  #+END_SRC
-* Delete database
-  This function deletes the database
-  #+NAME: delete-db
-  #+BEGIN_SRC python
-
-def delete_database(cnx, db_name):
-    cursor = cnx.cursor()
-    try:
-        query = "drop database %s" % (db_name)
-        cursor.execute(query)
-        print "database deleted"
-        return True
-    except MySQLdb.Error as err:
-        print "Failed deleting database: {}".format(err)
-        return False
-
-  #+END_SRC
-
-* Get users from dogwood database
+** Get users from dogwood database
   This function fetches the users from the dogwood version
   of openedx database and returns the list contained all the
   user information
@@ -107,7 +127,7 @@ def get_users_from_dogwood_db(cnx):
 
 
   #+END_SRC
-* Set users into ginkgo database
+** Set users into ginkgo database
   This function writes all the users into =ginkgo= version
   of openedx database
   #+NAME: set-users-to-ginkgo-db
@@ -132,39 +152,36 @@ joined'])
 
         
   #+END_SRC
-* Config
+** Config
   This holds configuration variables
   #+NAME: config
   #+BEGIN_SRC python
 HOST="localhost"
 USER="root"
 PASSWORD="root"
+SRC_DB = "dogwood"
+DEST_DB = "edxapp"
   
   #+END_SRC
-* Imports
+** Imports
   Required imports
   #+NAME: imports
   #+BEGIN_SRC python
 import MySQLdb
 from config import *  
   #+END_SRC
-* Main function
+** Main function
   #+NAME: main-func
   #+BEGIN_SRC python
 
 if __name__ == "__main__":
-    src_db_name = "dogwood"
-    dest_db_name = "ginkgo"
-    dogwood_db_cnx = connect_db(src_db_name)
+    dogwood_db_cnx = connect_db(SRC_DB)
     user_list = get_users_from_dogwood_db(dogwood_db_cnx)
-    ginkgo_db_cnx = connect_db(dest_db_name)
+    ginkgo_db_cnx = connect_db(DEST_DB)
     set_users_to_ginkgo_db(ginkgo_db_cnx, user_list)
-    #delete_database(dogwood_db_cnx, src_db_name)
-    #create_database(dogwood_db_cnx, db_name)                                           
-    #delete_database(dogwood_db_cnx, db_name)    
 
   #+END_SRC
-* Tangle
+** Tangle
 ** sources
 #+BEGIN_SRC python :tangle config.py :eval no :noweb yes 
 <<config>>
@@ -173,8 +190,6 @@ if __name__ == "__main__":
 #+BEGIN_SRC python :tangle migrate-usr-db.py :eval no :noweb yes 
 <<imports>>
 <<connect-db>>
-<<create-db>>
-<<delete-db>>
 <<get-users-dogwood-db>>
 <<set-users-to-ginkgo-db>>
 <<main-func>>
