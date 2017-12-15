@@ -11,8 +11,8 @@
   =Dogwood= to =Ginkgo= version
 * Use case scenario
   Currently VLEAD is using OpenEdx platform of =dogwood=
-  version to host the courses. To upgrade this version to
-  =Ginkgo= all the courses and user database has to be
+  version to host the Virtual Labs. To upgrade this version
+  to =Ginkgo= all the courses and user database has to be
   migrated.
   
 * Steps to migrate user database from dogwood to ginkgo
@@ -23,7 +23,7 @@
      #+END_EXAMPLE
   2. Create a database with name =dogwood=
      #+BEGIN_EXAMPLE
-     mysql> create database dogwood
+     mysql> create database dogwood;
      #+END_EXAMPLE
   3. Exit from the mysql server
      #+BEGIN_EXAMPLE
@@ -31,7 +31,7 @@
      #+END_EXAMPLE
   4. Import sql file into =dogwood= database
      #+BEGIN_EXAMPLE
-     mysql -u root -p dogwood < dogwood-dump.sql
+     mysql -u root -p dogwood < <file-name>.sql
      #+END_EXAMPLE
 ** Steps to run user database migration script
 
@@ -161,6 +161,7 @@ USER="root"
 PASSWORD="root"
 SRC_DB = "dogwood"
 DEST_DB = "edxapp"
+DEAFULT_USERS = ["staff@example.com"]
   
   #+END_SRC
 ** Imports
