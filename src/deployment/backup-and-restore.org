@@ -1,0 +1,70 @@
+#+TITLE: Backup and Restore of Databases OpenedX (ginkgo).
+#+AUTHOR: VLEAD
+#+DATE: [2017-11-27 Mon]
+#+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+  This document describes the steps to backup courses and
+  user data from an OpenedX ginkgo version to newly
+  installed OpenedX ginkgo version (without courses).
+* Steps
+** Backup
+1. Login to OpenedX Machine
+
+   #+BEGIN_EXAMPLE
+   ssh -i <key> <username>@<ip>
+   #+END_EXAMPLE
+
+2. Change the value of =auth= variable from =true= to
+   =false= in =/etc/mongod.conf= file.
+
+   #+BEGIN_EXAMPLE
+   sudo vim /etc/mongod.conf
+   #+END_EXAMPLE
+
+   #+BEGIN_EXAMPLE
+   ...
+   ....
+   auth=false;
+   ....
+   ....
+   #+END_EXAMPLE
+
+3. Delete the lock file =mongod.lock= at
+   =/edx/var/mongo/mongodb= and restart the MongoDB service
+
+   #+BEGIN_EXAMPLE
+   sudo rm /edx/var/mongo/mongodb/mongod.lock
+   sudo service mongod restart
+   #+END_EXAMPLE
+
+4. Take backup of existing databases with following
+   commands. By default password for the root user is empty
+   #+BEGIN_EXAMPLE
+   sudo mongodump -o ./mongo-backup
+   sudo mysqldump -u root -p --all-databases > ./backup.sql
+   #+END_EXAMPLE
+
+** Restore
+1. Login to newly installed OpenedX Machine 
+
+   #+BEGIN_EXAMPLE
+   ssh -i <key> <username>@<ip>
+   #+END_EXAMPLE
+
+2. Copy Backup File from remote machine to host machine.
+
+   #+BEGIN_EXAMPLE
+   rsync -avz --progress <username>@<ipaddress>:<src> <destination>
+   #+END_EXAMPLE
+
+3. Use the following commnad to restore the databases.
+
+   #+BEGIN_EXAMPLE
+   sudo mongorestore -drop ./mongo-backup     
+   sudo mysql -u root -p < ./backup.sql
+   #+END_EXAMPLE
+
