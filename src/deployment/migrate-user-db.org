@@ -54,8 +54,7 @@
        cd build/code/deployment
        #+END_EXAMPLE
     5. Configure the variables =HOST= , =USER= and
-       =PASSWORD= of mysql server.
-       as 
+       =PASSWORD= of mysql server at =config.py= file
        #+BEGIN_EXAMPLE
        HOST="localhost"
        USER="root"
@@ -137,22 +136,20 @@ def set_users_to_ginkgo_db(cnx, user_list):
     cursor = cnx.cursor()
     try:
         for user in user_list:
-            query = "insert into %s (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values('%s', '%s', %s, '%s', '%s', '%s', '%s', %s, %s, '%s')" %\
- \
-                ("auth_user", user['password'], user['last_login'], user['is_superuser'], user['username'], user['first_name'], user['last_name'], user['email'], user['is_staff'], user['is_active'], user['date_\
+            query = "insert into %s (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values('%s', '%s', %s, '%s', '%s', '%s', '%s', %s, %s, '%s')" % \
+              ("auth_user", user['password'], user['last_login'], user['is_superuser'], user['username'], user['first_name'], user['last_name'], user['email'], user['is_staff'], user['is_active'], user['date_\
 joined'])
 
-            if user['id'] > 5:
+            if user['email'] not in DEFAULT_USERS:
                 cursor.execute(query)
                 cnx.commit()
-            else:
-                print user['email']
+
     except Exception as e:
         print str(e)
 
         
   #+END_SRC
-** Config
+** Configuration
   This holds configuration variables
   #+NAME: config
   #+BEGIN_SRC python
@@ -161,7 +158,12 @@ USER="root"
 PASSWORD="root"
 SRC_DB = "dogwood"
 DEST_DB = "edxapp"
-DEAFULT_USERS = ["staff@example.com"]
+DEFAULT_USERS = ["ecommerce_worker@fake.email", \
+                     "enterprise_worker@example.com", \
+                     "honor@example.com", \
+                     "audit@example.com",
+                     "verified@example.com",
+                     "staff@example.com"]
   
   #+END_SRC
 ** Imports
