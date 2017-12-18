@@ -1,0 +1,53 @@
+#+TITLE: Plan for Vlabs Openedx Platform
+#+AUTHOR: VLEAD
+#+DATE: [2017-12-19 Mon]
+#+PROPERTY: results output
+#+PROPERTY: exports code
+#+SETUPFILE: ../org-templates/level-1.org
+#+options: ^:nil
+#+LATEX: Literal LaTeX code for export
+
+* Introduction
+  This document contains the realization plan for the
+  provision and deployment of the Vlabs Openedx platform
+
+* Milestones Snapshot
+
+  |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
+  |   | S. | Mi | Req | Milestone                                      | Plan | Status | Est | Act | Issues |
+  |   | no | no | Map |                                                |      |        | hrs | hrs |        |
+  |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
+  |   | 1. | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][1]]  |     | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][upgrade openedx version from dogwood to ginkgo]] | [[Fix back button functionality][ref]]  | Open   | 4   | 0   | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][ref]]    |
+  |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
+  |   |    |    |     | Total                                          |      |        | 4   | 0   |        |
+  | ^ |    |    |     |                                                |      |        | est | act |        |
+  |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
+  #+TBLFM: @3$8=remote(tbl-rlz-pln-ml-1, $est)
+  #+TBLFM: @3$9=remote(tbl-rlz-pln-ml-1, $act)
+  #+TBLFM: $est=vsum(@II+1..@-1)
+  #+TBLFM: $act=vsum(@II+1..@-1)
+
+* Detailed Plan 
+** upgrade openedx version from dogwood to ginkgo
+#+caption:  realization-plan-milestone-1
+#+name: tbl-rlz-pln-ml-1
+
+|---+-------+----------------------+--------+----------+--------+-----------+--------+---------+----------|
+|   | S.    | Tasks                | Github | Expected | Actual | Estimated | Actual | Status  | Assignee |
+|   | NO    |                      | Issues | Effort   | Effort | Start,    | Start/ |         |          |
+|   |       |                      |        | (in      | (in    | End       | End    |         |          |
+|   |       |                      |        | person   | person | Dates     | Dates  |         |          |
+|   |       |                      |        | hours)   | hours) |           |        |         |          |
+|---+-------+----------------------+--------+----------+--------+-----------+--------+---------+----------|
+|   | 1.    | open edx log pattern | [[https://github.com/vlead/vlabs-openedx-platform/issues/2][#2]]     | 4        |        |           |        | Backlog |          |
+|   |       | to be tested after   |        |          |        |           |        |         | Sripathi |
+|   |       | user database        |        |          |        |           |        |         |          |
+|   |       | migration            |        |          |        |           |        |         |          |
+|---+-------+----------------------+--------+----------+--------+-----------+--------+---------+----------|
+|   | Total |                      |        | 4        | 0      |           |        |         |          |
+| ^ |       |                      |        | est      | act    |           |        |         |          |
+|---+-------+----------------------+--------+----------+--------+-----------+--------+---------+----------|
+#+TBLFM: $est=vsum(@II+1..@-1)
+#+TBLFM: $act=vsum(@II+1..@-1)
+
+
