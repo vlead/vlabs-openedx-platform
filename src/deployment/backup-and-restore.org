@@ -11,6 +11,10 @@
   user data from an OpenedX ginkgo version to newly
   installed OpenedX ginkgo version (without courses).
 * Steps
+  Below backups and restoration steps are happened on
+  EC2 instance that is created from AWS AMI. This AWS AMI is
+  having ginkgo version of OpenedX platform. Please check
+  the details at [[https://gitlab.com/vlead-systems/docs/blob/master/src/aws-docs/convert-ova-to-ami.org]["OVA to AMI" document]]
 ** Backup
 1. Login to OpenedX Machine
 
@@ -68,3 +72,6 @@
    sudo mysql -u root -p < ./backup.sql
    #+END_EXAMPLE
 
+* References
+  - [[https://github.com/openedx-vlead/port-labs-to-openedx/blob/master/src/platform-install-configure/backup.org][Backup and restore]]
+  - [[https://github.com/openedx-vlead/port-labs-to-openedx/tree/master/src/platform-install-configure][Openedx platform dogwood install and configure]]
