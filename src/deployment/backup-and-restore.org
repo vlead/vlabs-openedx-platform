@@ -129,9 +129,8 @@ echo "Backup successfully done"
    1. Configuration
       #+NAME: conf-restore
       #+BEGIN_SRC shell
-      #!/bin/bash
+#!/bin/bash
       
-DB_PASS="xxx"
 BACKUP_FILE=$1
 
       
@@ -161,7 +160,7 @@ fi
    4. Restore mysql database
       #+NAME: restore-mysql-db
       #+BEGIN_SRC shell
-mysql -u root -p$DB_PASS < courses-bkp.sql
+mysql -u root < users-bkp.sql
 if [ $? -ne 0 ]; then
   echo "Error: during restoration of mysql databases"
   exit 1;
@@ -177,6 +176,7 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
+echo "Restore successfully done"
       #+END_SRC
 
 * Restore user database from dogwood to ginkgo
