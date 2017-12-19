@@ -48,8 +48,13 @@ OUT_FILE="$OUT_FILE_NAME-$VERSION.tar"
       #+NAME: mongo-conf
       #+BEGIN_SRC shell
 sed -i 's/auth=false/auth=true/g' /etc/mongod.conf
-      #+END_SRC
+if [ $? -ne 0 ]; then
+  echo "Error: Something went wrong during mongod configuration."
+  exit 1;
+fi
 
+      #+END_SRC
+      
    3. Delete the lock file =mongod.lock= at
       =/edx/var/mongo/mongodb= and restart the MongoDB
       service
@@ -58,6 +63,10 @@ sed -i 's/auth=false/auth=true/g' /etc/mongod.conf
       #+BEGIN_SRC shell
 
 rm /edx/var/mongo/mongodb/mongod.lock
+if [ $? -ne 0 ]; then
+  echo "Error: during deleting mongodb lock file"
+  exit 1;
+fi
       
       #+END_SRC
 
@@ -67,6 +76,10 @@ rm /edx/var/mongo/mongodb/mongod.lock
       #+BEGIN_SRC shell
 
 service mongod restart
+if [ $? -ne 0 ]; then
+  echo "Error: during mongodb service restart"
+  exit 1;
+fi
 
       #+END_SRC
 
@@ -78,6 +91,10 @@ service mongod restart
        #+BEGIN_SRC shell
 
 mongodump -o $MONGODB_BKP_FILE
+if [ $? -ne 0 ]; then
+  echo "Error: during mongodb service restart"
+  exit 1;
+fi
 
        #+END_SRC
        
@@ -87,6 +104,10 @@ mongodump -o $MONGODB_BKP_FILE
       #+BEGIN_SRC shell
 
 mysqldump -u root -p$MYSQL_DB_PASS $MYSQL_DB_NAME > MYSQL_BKP_FILE
+if [ $? -ne 0 ]; then
+  echo "Error: during backup of mysql databases"
+  exit 1;
+fi
 
       #+END_SRC
 
@@ -94,6 +115,13 @@ mysqldump -u root -p$MYSQL_DB_PASS $MYSQL_DB_NAME > MYSQL_BKP_FILE
       #+NAME: create-tar
       #+BEGIN_SRC shell
 tar -cvf $OUT_FILE MYSQL_BKP_FILE MONGODB_BKP_FILE
+if [ $? -ne 0 ]; then
+  echo "Error: during creation of tar file"
+  exit 1;
+fi
+
+echo "Backup successfully done"
+
       #+END_SRC
 
 * Restore same version
@@ -135,18 +163,40 @@ fi
       #+NAME: restore-mysql-db
       #+BEGIN_SRC shell
 mysql -u root -p$DB_PASS < courses-bkp.sql
+if [ $? -ne 0 ]; then
+  echo "Error: during restoration of mysql databases"
+  exit 1;
+fi
+
       #+END_SRC
    5. Restore course database
       #+NAME: restore-course-db
       #+BEGIN_SRC shell
 mongorestore -drop courses-bkp
+if [ $? -ne 0 ]; then
+  echo "Error: during backup of mongodb course databases"
+  exit 1;
+fi
+
       #+END_SRC
 
 * Restore user database from dogwood to ginkgo
-  This document has script to migrate the user database from
-  =Dogwood= to =Ginkgo= version
-** Steps
-*** Connect to database
+  This script migrates the user database from =Dogwood= to
+  =Ginkgo= version
+** Restore  script
+   #+NAME: restore
+   #+BEGIN_SRC shell
+#!/bin/bash
+       
+/usr/bin/python migrate-usr-db.py
+if [ $? -ne 0 ]; then
+  echo "Error: while executing script migrate-usr-db.py"
+  exit 1;
+fi
+     
+   #+END_SRC
+
+** Connect to database
   This function connects to mysql database and returns the
   connection object
   #+NAME: connect-db
@@ -165,11 +215,11 @@ def connect_db(db_name):
         print "connected to database"
         return cnx
     except Exception as err:
-        print(err)
+        print str(err)
         exit(1)
 
   #+END_SRC
-*** Configuration
+** Configuration
   This holds configuration variables
   #+NAME: config
   #+BEGIN_SRC python
@@ -180,7 +230,7 @@ SRC_DB = "dogwood"
 DEST_DB = "edxapp"
   
   #+END_SRC
-*** Get users from dogwood database
+** Get users from dogwood database
   This function fetches the users from the dogwood version
   of openedx database and returns the list contained all the
   user information
@@ -214,7 +264,7 @@ def get_users_from_dogwood_db(cnx):
 
 
   #+END_SRC
-*** Set users into ginkgo database
+** Set users into ginkgo database
   This function writes all the users into =ginkgo= version
   of openedx database
   #+NAME: set-users-to-ginkgo-db
@@ -237,14 +287,14 @@ joined'])
 
         
   #+END_SRC
-*** Imports
+** Imports
   Required imports
   #+NAME: imports
   #+BEGIN_SRC python
 import MySQLdb
 from config import *  
   #+END_SRC
-*** Main function
+** Main function
   #+NAME: main-func
   #+BEGIN_SRC python
 
@@ -279,12 +329,17 @@ if __name__ == "__main__":
 <<restore-course-db>>
 #+END_SRC
 
-** migrate user database
-#+BEGIN_SRC python :tangle config.py :eval no :noweb yes 
+** restore
+*** restore script 
+#+BEGIN_SRC shell :tangle ../scripts/restore :eval no :noweb yes 
+<<restore>>
+#+END_SRC
+*** migrate user database
+#+BEGIN_SRC python :tangle ../scripts/config.py :eval no :noweb yes 
 <<config>>
 #+END_SRC
 
-#+BEGIN_SRC python :tangle migrate-usr-db.py :eval no :noweb yes 
+#+BEGIN_SRC python :tangle ../scripts/migrate-usr-db.py :eval no :noweb yes 
 <<imports>>
 <<connect-db>>
 <<get-users-dogwood-db>>
