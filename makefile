@@ -12,12 +12,13 @@ STYLE_DIR=style
 CODE_DIR=build/code
 DOC_DIR=build/docs
 SRC_DIR=src
+SCRIPT_DIR=scripts
 PWD=$(shell pwd)
 LINT_FILE=${PWD}/${CODE_DIR}/lint_output
 EXIT_FILE=${PWD}/exit.txt
 STATUS=0
 
-all:  build run-py-tests
+all:  build run-py-tests mv-scripts
 
 clean-literate:
 	rm -rf ${ELISP_DIR}
@@ -69,6 +70,9 @@ build-with-lint: build lint
 
 run-py-tests:
 	export PYTHONPATH=${PWD}/${CODE_DIR}; find ${PWD}/${CODE_DIR} -name '*test_*.py' -exec python '{}' \;
+
+mv-scripts:
+	rsync -a ${SCRIPT_DIR}/labspec.json ${CODE_DIR}/${SCRIPT_DIR}/
 
 clean:	clean-literate
 	rm -rf ${BUILD_DIR}

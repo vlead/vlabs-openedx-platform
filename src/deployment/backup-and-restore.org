@@ -1,4 +1,4 @@
-#+TITLE: Backup and Restore of Databases OpenedX (ginkgo).
+#+TITLE: Backup and Restore of Openedx Platform
 #+AUTHOR: VLEAD
 #+DATE: [2017-11-27 Mon]
 #+SETUPFILE: ./org-templates/level-0.org
@@ -7,71 +7,287 @@
 #+OPTIONS: ^:nil
 
 * Introduction
-  This document describes the steps to backup courses and
-  user data from an OpenedX ginkgo version to newly
-  installed OpenedX ginkgo version (without courses).
-* Steps
-  Below backups and restoration steps are happened on
-  EC2 instance that is created from AWS AMI. This AWS AMI is
-  having ginkgo version of OpenedX platform. Please check
-  the details at [[https://gitlab.com/vlead-systems/docs/blob/master/src/aws-docs/convert-ova-to-ami.org]["OVA to AMI" document]]
-** Backup
-1. Login to OpenedX Machine
+  This document has scripts for backup, restore and to
+  migrate the Vlabs OpenEdx platform version from =dogwood=
+  to =gikngo=
 
-   #+BEGIN_EXAMPLE
-   ssh -i <key> <username>@<ip>
-   #+END_EXAMPLE
+* Backup script
+  This script will backup the course and user database
+** Steps
+   
+   1. Configuration
+      
+      #+NAME: backup-conf
+      #+BEGIN_SRC shell
 
-2. Change the value of =auth= variable from =true= to
-   =false= in =/etc/mongod.conf= file.
+MYSQL_DB_NAME="--all-databases"
+MYSQL_DB_PASS=""
 
-   #+BEGIN_EXAMPLE
-   sudo vim /etc/mongod.conf
-   #+END_EXAMPLE
 
-   #+BEGIN_EXAMPLE
-   ...
-   ....
-   auth=false;
-   ....
-   ....
-   #+END_EXAMPLE
+MONGODB_BKP_FILE="courses-bkp"
 
-3. Delete the lock file =mongod.lock= at
-   =/edx/var/mongo/mongodb= and restart the MongoDB service
+MYSQL_BKP_FILE="users-bkp.sql"
 
-   #+BEGIN_EXAMPLE
-   sudo rm /edx/var/mongo/mongodb/mongod.lock
-   sudo service mongod restart
-   #+END_EXAMPLE
+OUT_FILE_NAME="openedx"
+VERSION="ginkgo"
+OUT_FILE="$OUT_FILE_NAME-$VERSION.tar"
 
-4. Take backup of existing databases with following
-   commands. By default password for the root user is empty
-   #+BEGIN_EXAMPLE
-   sudo mongodump -o ./mongo-backup
-   sudo mysqldump -u root -p --all-databases > ./backup.sql
-   #+END_EXAMPLE
+      #+END_SRC
+      
+   2. Change the value of =auth= variable from =true= to
+      =false= in =/etc/mongod.conf= file.
 
-** Restore
-1. Login to newly installed OpenedX Machine 
+      #+BEGIN_EXAMPLE
+      ...
+      ....
+      auth=false;
+      ....
+      ....
+      #+END_EXAMPLE
 
-   #+BEGIN_EXAMPLE
-   ssh -i <key> <username>@<ip>
-   #+END_EXAMPLE
+      #+NAME: mongo-conf
+      #+BEGIN_SRC shell
+sed -i 's/auth=false/auth=true/g' /etc/mongod.conf
+      #+END_SRC
 
-2. Copy Backup File from remote machine to host machine.
+   3. Delete the lock file =mongod.lock= at
+      =/edx/var/mongo/mongodb= and restart the MongoDB
+      service
 
-   #+BEGIN_EXAMPLE
-   rsync -avz --progress <username>@<ipaddress>:<src> <destination>
-   #+END_EXAMPLE
+      #+NAME: rm-mongo-lock
+      #+BEGIN_SRC shell
 
-3. Use the following commnad to restore the databases.
+rm /edx/var/mongo/mongodb/mongod.lock
+      
+      #+END_SRC
 
-   #+BEGIN_EXAMPLE
-   sudo mongorestore -drop ./mongo-backup     
-   sudo mysql -u root -p < ./backup.sql
-   #+END_EXAMPLE
+   4. Restart the service
 
-* References
-  - [[https://github.com/openedx-vlead/port-labs-to-openedx/blob/master/src/platform-install-configure/backup.org][Backup and restore]]
-  - [[https://github.com/openedx-vlead/port-labs-to-openedx/tree/master/src/platform-install-configure][Openedx platform dogwood install and configure]]
+      #+NAME: restart-mongodb
+      #+BEGIN_SRC shell
+
+service mongod restart
+
+      #+END_SRC
+
+   5. Take backup of existing databases with following
+      commands. By default password for the root user is
+      empty
+
+       #+NAME: bkp-mongodb
+       #+BEGIN_SRC shell
+
+mongodump -o $MONGODB_BKP_FILE
+
+       #+END_SRC
+       
+   6. Backup of mysql database
+
+      #+NAME: bkp-mysqldb
+      #+BEGIN_SRC shell
+
+mysqldump -u root -p$MYSQL_DB_PASS $MYSQL_DB_NAME > MYSQL_BKP_FILE
+
+      #+END_SRC
+
+   7. Tar the backup files
+      #+NAME: create-tar
+      #+BEGIN_SRC shell
+tar -cvf $OUT_FILE MYSQL_BKP_FILE MONGODB_BKP_FILE
+      #+END_SRC
+
+* Restore same version
+  This script will backup the course and user database
+** Steps
+   1. Configuration
+      #+NAME: conf-restore
+      #+BEGIN_SRC shell
+      #!/bin/bash
+      
+DB_PASS="xxx"
+BACKUP_FILE=$1
+
+      
+      #+END_SRC
+   2. Input validation
+      #+NAME: input-validation
+      #+BEGIN_SRC shell
+if [ -z $BACKUP_FILE ]; then
+  echo "Error: No arguments were passed!!"
+  echo "Error: The path to the backup file must be passed."
+  usage
+  exit 1;
+fi
+      
+      #+END_SRC
+   3. Untar the backup file
+      #+NAME: untar-bkp-file
+      #+BEGIN_SRC shell
+tar -xvf $BACKUP_FILE
+if [ $? -ne 0 ]; then
+  echo "Error: Something went wrong while untaring."
+  echo "Aborting restore."
+  exit 1;
+fi
+      
+      #+END_SRC
+   4. Restore mysql database
+      #+NAME: restore-mysql-db
+      #+BEGIN_SRC shell
+mysql -u root -p$DB_PASS < courses-bkp.sql
+      #+END_SRC
+   5. Restore course database
+      #+NAME: restore-course-db
+      #+BEGIN_SRC shell
+mongorestore -drop courses-bkp
+      #+END_SRC
+
+* Restore user database from dogwood to ginkgo
+  This document has script to migrate the user database from
+  =Dogwood= to =Ginkgo= version
+** Steps
+*** Connect to database
+  This function connects to mysql database and returns the
+  connection object
+  #+NAME: connect-db
+  #+BEGIN_SRC python
+
+def connect_db(db_name):
+
+    config = {
+        'user': USER,
+        'passwd': PASSWORD,
+        'host': HOST,
+        'db': db_name
+        }
+    try:
+        cnx = MySQLdb.connect(**config)
+        print "connected to database"
+        return cnx
+    except Exception as err:
+        print(err)
+        exit(1)
+
+  #+END_SRC
+*** Configuration
+  This holds configuration variables
+  #+NAME: config
+  #+BEGIN_SRC python
+HOST="localhost"
+USER="root"
+PASSWORD="root"
+SRC_DB = "dogwood"
+DEST_DB = "edxapp"
+  
+  #+END_SRC
+*** Get users from dogwood database
+  This function fetches the users from the dogwood version
+  of openedx database and returns the list contained all the
+  user information
+  #+NAME: get-users-dogwood-db
+  #+BEGIN_SRC python
+
+def get_users_from_dogwood_db(cnx):
+    cursor = cnx.cursor()
+    print "get_users_from_dogwood_db"
+    query = "select * from auth_user"
+    cursor.execute(query)
+    users = cursor.fetchall()
+    users_list = []
+
+    for user in users:
+        user_dict = {}
+        user_dict["id"] = int(user[0])
+        user_dict["password"] = user[1]
+        user_dict["last_login"] = user[2]
+        user_dict["is_superuser"] = user[3]
+        user_dict["username"] = user[4]
+        user_dict["first_name"] =  user[5]
+        user_dict["last_name"] = user[6]
+        user_dict["email"] = user[7]
+        user_dict["is_staff"] = user[8]
+        user_dict["is_active"] = user[9]
+        user_dict["date_joined"] = user[10]
+        users_list.append(user_dict)
+
+    return users_list
+
+
+  #+END_SRC
+*** Set users into ginkgo database
+  This function writes all the users into =ginkgo= version
+  of openedx database
+  #+NAME: set-users-to-ginkgo-db
+  #+BEGIN_SRC python
+
+def set_users_to_ginkgo_db(cnx, user_list):
+    cursor = cnx.cursor()
+    try:
+        for user in user_list:
+            query = "insert into %s (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values('%s', '%s', %s, '%s', '%s', '%s', '%s', %s, %s, '%s')" % \
+              ("auth_user", user['password'], user['last_login'], user['is_superuser'], user['username'], user['first_name'], user['last_name'], user['email'], user['is_staff'], user['is_active'], user['date_\
+joined'])
+
+            if user['email'] not in DEFAULT_USERS:
+                cursor.execute(query)
+                cnx.commit()
+
+    except Exception as e:
+        print str(e)
+
+        
+  #+END_SRC
+*** Imports
+  Required imports
+  #+NAME: imports
+  #+BEGIN_SRC python
+import MySQLdb
+from config import *  
+  #+END_SRC
+*** Main function
+  #+NAME: main-func
+  #+BEGIN_SRC python
+
+if __name__ == "__main__":
+    dogwood_db_cnx = connect_db(SRC_DB)
+    user_list = get_users_from_dogwood_db(dogwood_db_cnx)
+    ginkgo_db_cnx = connect_db(DEST_DB)
+    set_users_to_ginkgo_db(ginkgo_db_cnx, user_list)
+
+  #+END_SRC
+
+* Tangle
+** backup
+
+#+BEGIN_SRC shell :tangle ../scripts/backup :eval no :noweb yes 
+<<backup-conf>>
+<<mongo-conf>>
+<<rm-mongo-lock>>
+<<restart-mongodb>>
+<<bkp-mongodb>>
+<<bkp-mysqldb>>
+<<create-tar>>
+#+END_SRC
+
+** restore-same-version
+
+#+BEGIN_SRC shell :tangle ../scripts/restore-same-version :eval no :noweb yes 
+<<conf-restore>>
+<<input-validation>>
+<<untar-bkp-file>>
+<<restore-mysql-db>>
+<<restore-course-db>>
+#+END_SRC
+
+** migrate user database
+#+BEGIN_SRC python :tangle config.py :eval no :noweb yes 
+<<config>>
+#+END_SRC
+
+#+BEGIN_SRC python :tangle migrate-usr-db.py :eval no :noweb yes 
+<<imports>>
+<<connect-db>>
+<<get-users-dogwood-db>>
+<<set-users-to-ginkgo-db>>
+<<main-func>>
+#+END_SRC
