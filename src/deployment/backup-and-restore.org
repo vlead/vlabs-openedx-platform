@@ -21,8 +21,6 @@
       #+BEGIN_SRC shell
 
 MYSQL_DB_NAME="--all-databases"
-MYSQL_DB_PASS=""
-
 
 MONGODB_BKP_FILE="courses-bkp"
 
@@ -40,14 +38,15 @@ OUT_FILE="$OUT_FILE_NAME-$VERSION.tar"
       #+BEGIN_EXAMPLE
       ...
       ....
-      auth=false;
+      #auth = true
+      auth = false
       ....
       ....
       #+END_EXAMPLE
 
       #+NAME: mongo-conf
       #+BEGIN_SRC shell
-sed -i 's/auth=false/auth=true/g' /etc/mongod.conf
+sed -i 's/auth = true/auth = false/g' /etc/mongod.conf
 if [ $? -ne 0 ]; then
   echo "Error: Something went wrong during mongod configuration."
   exit 1;
@@ -103,7 +102,7 @@ fi
       #+NAME: bkp-mysqldb
       #+BEGIN_SRC shell
 
-mysqldump -u root -p$MYSQL_DB_PASS $MYSQL_DB_NAME > MYSQL_BKP_FILE
+mysqldump -u root $MYSQL_DB_NAME > $MYSQL_BKP_FILE
 if [ $? -ne 0 ]; then
   echo "Error: during backup of mysql databases"
   exit 1;
@@ -114,7 +113,7 @@ fi
    7. Tar the backup files
       #+NAME: create-tar
       #+BEGIN_SRC shell
-tar -cvf $OUT_FILE MYSQL_BKP_FILE MONGODB_BKP_FILE
+tar -cvf $OUT_FILE $MYSQL_BKP_FILE $MONGODB_BKP_FILE
 if [ $? -ne 0 ]; then
   echo "Error: during creation of tar file"
   exit 1;
@@ -272,20 +271,15 @@ def get_users_from_dogwood_db(cnx):
 
 def set_users_to_ginkgo_db(cnx, user_list):
     cursor = cnx.cursor()
-    try:
-        for user in user_list:
-            query = "insert into %s (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values('%s', '%s', %s, '%s', '%s', '%s', '%s', %s, %s, '%s')" % \
-              ("auth_user", user['password'], user['last_login'], user['is_superuser'], user['username'], user['first_name'], user['last_name'], user['email'], user['is_staff'], user['is_active'], user['date_\
-joined'])
+    for user in user_list:
+        query = "insert into %s (password, last_login, is_superuser, username, first_name, last_name, email, is_staff, is_active, date_joined) values('%s', '%s', %s, '%s', '%s', '%s', '%s', %s, %s, '%s')" % \
+          ("auth_user", user['password'], user['last_login'], user['is_superuser'], user['username'], user['first_name'], user['last_name'], user['email'], user['is_staff'], user['is_active'], user['date_joined'])
+        try:
+            cursor.execute(query)
+            cnx.commit()
+        except Exception as e:
+            print str(e)
 
-            if user['email'] not in DEFAULT_USERS:
-                cursor.execute(query)
-                cnx.commit()
-
-    except Exception as e:
-        print str(e)
-
-        
   #+END_SRC
 ** Imports
   Required imports
