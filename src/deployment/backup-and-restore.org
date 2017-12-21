@@ -8,17 +8,19 @@
 
 * Introduction
   This document has scripts for backup, restore and to
-  migrate the Vlabs OpenEdx platform version from =dogwood=
-  to =gikngo=
+  migrate the Vlabs OpenEdx platform data from =dogwood=
+  version to =ginkgo=
 
-* Backup script
-  This script will backup the course and user database
-** Steps
+* Backup script for openedx ginkgo version
+  This script backup the course and user database of openedx
+  platform running =ginkgo= version
    
-   1. Configuration
-      
-      #+NAME: backup-conf
-      #+BEGIN_SRC shell
+** Configuration
+   Configure the mysql db_name, backup file and the version
+   name
+*** Configure mysql database credentials      
+  #+NAME: backup-conf
+  #+BEGIN_SRC shell
 
 MYSQL_DB_NAME="--all-databases"
 
@@ -27,52 +29,47 @@ MONGODB_BKP_FILE="courses-bkp"
 MYSQL_BKP_FILE="users-bkp.sql"
 
 OUT_FILE_NAME="openedx"
+
 VERSION="ginkgo"
+
 OUT_FILE="$OUT_FILE_NAME-$VERSION.tar"
 
-      #+END_SRC
-      
-   2. Change the value of =auth= variable from =true= to
-      =false= in =/etc/mongod.conf= file.
+#+END_SRC
 
-      #+BEGIN_EXAMPLE
-      ...
-      ....
-      #auth = true
-      auth = false
-      ....
-      ....
-      #+END_EXAMPLE
+*** Configure mongodb parameters      
+    Change the value of =auth= variable from =true= to
+    =false= in =/etc/mongod.conf= file.
 
-      #+NAME: mongo-conf
-      #+BEGIN_SRC shell
+#+BEGIN_EXAMPLE
+...
+....
+#auth = true
+auth = false
+....
+....
+#+END_EXAMPLE
+
+#+NAME: mongo-conf
+#+BEGIN_SRC shell
 sed -i 's/auth = true/auth = false/g' /etc/mongod.conf
 if [ $? -ne 0 ]; then
   echo "Error: Something went wrong during mongod configuration."
   exit 1;
 fi
 
-      #+END_SRC
+#+END_SRC
       
-   3. Delete the lock file =mongod.lock= at
-      =/edx/var/mongo/mongodb= and restart the MongoDB
-      service
-
-      #+NAME: rm-mongo-lock
-      #+BEGIN_SRC shell
+** Restart mongodb service
+   Delete the lock file =mongod.lock= at
+   =/edx/var/mongo/mongodb= and restart the MongoDB service
+#+NAME: rm-mongo-lock
+#+BEGIN_SRC shell
 
 rm /edx/var/mongo/mongodb/mongod.lock
 if [ $? -ne 0 ]; then
   echo "Error: during deleting mongodb lock file"
   exit 1;
 fi
-      
-      #+END_SRC
-
-   4. Restart the service
-
-      #+NAME: restart-mongodb
-      #+BEGIN_SRC shell
 
 service mongod restart
 if [ $? -ne 0 ]; then
@@ -80,14 +77,14 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
-      #+END_SRC
+#+END_SRC
 
-   5. Take backup of existing databases with following
-      commands. By default password for the root user is
-      empty
+** Backup mongo database
+   Backup of existing mongodb databases. Default password
+   for the root user is empty
 
-       #+NAME: bkp-mongodb
-       #+BEGIN_SRC shell
+#+NAME: bkp-mongodb
+#+BEGIN_SRC shell
 
 mongodump -o $MONGODB_BKP_FILE
 if [ $? -ne 0 ]; then
@@ -95,12 +92,13 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
-       #+END_SRC
+#+END_SRC
        
-   6. Backup of mysql database
-
-      #+NAME: bkp-mysqldb
-      #+BEGIN_SRC shell
+** Backup of mysql database
+   Backup of existing mysql databases. Default password
+   for the root user is empty
+#+NAME: bkp-mysqldb
+#+BEGIN_SRC shell
 
 mysqldump -u root $MYSQL_DB_NAME > $MYSQL_BKP_FILE
 if [ $? -ne 0 ]; then
@@ -108,11 +106,11 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
-      #+END_SRC
+#+END_SRC
 
-   7. Tar the backup files
-      #+NAME: create-tar
-      #+BEGIN_SRC shell
+** Compress mysql and mongo database backup files into =.tar.gz= files
+#+NAME: create-tar
+#+BEGIN_SRC shell
 tar -cvf $OUT_FILE $MYSQL_BKP_FILE $MONGODB_BKP_FILE
 if [ $? -ne 0 ]; then
   echo "Error: during creation of tar file"
@@ -121,55 +119,54 @@ fi
 
 echo "Backup successfully done"
 
-      #+END_SRC
+#+END_SRC
 
-* Restore same version
-  This script will backup the course and user database
-** Steps
-   1. Configuration
-      #+NAME: conf-restore
-      #+BEGIN_SRC shell
+* Restore script for openedx ginkgo version
+  This script takes the backup of Openedx =ginkgo= version
+  and restores the same into Openedx =ginkgo= version
+ 
+** Validate command line arguments
+  Restore script expects the backup file of previous version
+  in =.tar.gz= format. This file has to be given as first
+  command line argument
+#+NAME: conf-restore
+#+BEGIN_SRC shell
 #!/bin/bash
       
 BACKUP_FILE=$1
-
-      
-      #+END_SRC
-   2. Input validation
-      #+NAME: input-validation
-      #+BEGIN_SRC shell
 if [ -z $BACKUP_FILE ]; then
   echo "Error: No arguments were passed!!"
   echo "Error: The path to the backup file must be passed."
   usage
   exit 1;
 fi
-      
-      #+END_SRC
-   3. Untar the backup file
-      #+NAME: untar-bkp-file
-      #+BEGIN_SRC shell
+
+#+END_SRC
+
+** Un tar the backup file
+#+NAME: untar-bkp-file
+#+BEGIN_SRC shell
 tar -xvf $BACKUP_FILE
 if [ $? -ne 0 ]; then
   echo "Error: Something went wrong while untaring."
   echo "Aborting restore."
   exit 1;
 fi
-      
-      #+END_SRC
-   4. Restore mysql database
-      #+NAME: restore-mysql-db
-      #+BEGIN_SRC shell
+    
+#+END_SRC
+** Restore mysql database
+#+NAME: restore-mysql-db
+#+BEGIN_SRC shell
 mysql -u root < users-bkp.sql
 if [ $? -ne 0 ]; then
   echo "Error: during restoration of mysql databases"
   exit 1;
 fi
 
-      #+END_SRC
-   5. Restore course database
-      #+NAME: restore-course-db
-      #+BEGIN_SRC shell
+#+END_SRC
+**  Restore mongodb database
+#+NAME: restore-course-db
+#+BEGIN_SRC shell
 mongorestore -drop courses-bkp
 if [ $? -ne 0 ]; then
   echo "Error: during backup of mongodb course databases"
@@ -177,11 +174,73 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "Restore successfully done"
-      #+END_SRC
+#+END_SRC
 
 * Restore user database from dogwood to ginkgo
-  This script migrates the user database from =Dogwood= to
-  =Ginkgo= version
+  This script migrates the user database of Openedx version
+  =Dogwood= to =Ginkgo=
+** Dump dogwood user database into mysql database
+   Following are the steps to dump the user database of
+   Openedx =dogwood= into mysql database
+
+  1. Download the user database backup of Openedx =dogwood=
+     version from production machine
+  2. Log into the database
+     #+BEGIN_EXAMPLE
+     mysql -u root
+     #+END_EXAMPLE
+  3. Create a database with name =dogwood=
+     #+BEGIN_EXAMPLE
+     mysql> create database dogwood;
+     #+END_EXAMPLE
+  4. Exit from the mysql server
+     #+BEGIN_EXAMPLE
+     > exit
+     #+END_EXAMPLE
+  5. Import sql file into =dogwood= database
+     #+BEGIN_EXAMPLE
+     mysql -u root dogwood < <file-name>.sql
+     #+END_EXAMPLE
+
+** Steps to run migration script
+   Following are the steps to migrate the user database from
+   Openedx =dogwood= to =ginkgo= version
+
+    1. Clone the repository
+       #+BEGIN_EXAMPLE
+       git clone https://github.com/vlead/vlabs-openedx-platform
+       #+END_EXAMPLE
+    2. Change directory to =vlabs-openedx-platform= and
+       checkout branch to =develop=
+       #+BEGIN_EXAMPLE
+       cd vlabs-openedx-platform
+       git checkout develop
+       #+END_EXAMPLE
+    3. Build the sources
+       #+BEGIN_EXAMPLE
+       make
+       #+END_EXAMPLE
+    4. Changed directory to deployment folder
+       #+BEGIN_EXAMPLE
+       cd build/code/scripts
+       #+END_EXAMPLE
+    5. Configure the variables =HOST= , =USER= and
+       =PASSWORD= of mysql server at =config.py= file
+       #+BEGIN_EXAMPLE
+       HOST="localhost"
+       USER="root"
+       PASSWORD=""
+       SRC_DB = "dogwood"
+       DEST_DB = "edxapp"
+
+       #+END_EXAMPLE
+    6. Run the script
+       #+BEGIN_EXAMPLE
+       chmod +x restore
+       ./restore
+       #+END_EXAMPLE
+    7. If step(6) is successful delete the =dogwood= database
+
 ** Restore  script
    #+NAME: restore
    #+BEGIN_SRC shell
