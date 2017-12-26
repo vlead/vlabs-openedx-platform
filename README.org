@@ -1,1 +1,5 @@
-* vlabs-openedx-platform
+* Introduction
+  This repository has setup scripts to provision the Vlabs
+  Openedx platform running =Ginkgo= version
+* Setup development environment
+  Follow [[./deployment/index.org][documentation]] to setup the development environment
