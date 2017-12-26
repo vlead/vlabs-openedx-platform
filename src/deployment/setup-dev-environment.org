@@ -132,6 +132,7 @@
 
   1. Clone the repository
      #+BEGIN_EXAMPLE
+     sudo su -
      git clone https://github.com/vlead/vlabs-openedx-platform
      #+END_EXAMPLE
   2. Change directory to =vlabs-openedx-platform= and
@@ -140,22 +141,28 @@
      cd vlabs-openedx-platform
      git checkout develop
      #+END_EXAMPLE
-  3. Build the sources
+  3. Install emacs
+     #+BEGIN_EXAMPLE
+     apt-get update -y
+     apt-get install emacs -y
+     #+END_EXAMPLE
+  4. Build the sources
      #+BEGIN_EXAMPLE
      make
-     #+END_EXAMPLE
-  4. Get the backup file
-     #+BEGIN_EXAMPLE
-     wget http://files.vlabs.ac.in/downloads/edx-ginkgo-backups/openedx-ginkgo-with-90-courses.tar
      #+END_EXAMPLE
   5. Change directory to =scripts= folder
      #+BEGIN_EXAMPLE
      cd build/code/scripts
      #+END_EXAMPLE
-  6. Run =restore-same-version= script and pass the argument
-     as backup tar file in =.tar= file
+  6. Get the Openedx platform =ginkgo= backup file
      #+BEGIN_EXAMPLE
-     chmod +x restore-same-version= script
+     wget http://files.vlabs.ac.in/downloads/edx-ginkgo-backups/openedx-ginkgo-with-90-courses.tar
+     #+END_EXAMPLE
+  7. Set execute permission to =restore-same-version= and the
+     the script by passing the argument as backup tar file
+     in =.tar= file
+     #+BEGIN_EXAMPLE
+     chmod +x restore-same-version
      #./restore-same-version <tar-file-name>.tar
      ./restore-same-version openedx-ginkgo-with-90-courses.tar
      #+END_EXAMPLE
@@ -196,26 +203,12 @@
    Following are the steps to migrate the user database from
    Openedx =dogwood= to =ginkgo= version
 
-    1. Clone the repository
-       #+BEGIN_EXAMPLE
-       git clone https://github.com/vlead/vlabs-openedx-platform
-       #+END_EXAMPLE
-    2. Change directory to =vlabs-openedx-platform= and
-       checkout branch to =develop=
-       #+BEGIN_EXAMPLE
-       cd vlabs-openedx-platform
-       git checkout develop
-       #+END_EXAMPLE
-    3. Build the sources
-       #+BEGIN_EXAMPLE
-       make
-       #+END_EXAMPLE
-    4. Changed directory to deployment folder
+    1. Changed directory to =scripts= folder
        #+BEGIN_EXAMPLE
        cd build/code/scripts
        #+END_EXAMPLE
-    5. Configure the variables =HOST= , =USER= and
-       =PASSWORD= of mysql server at =config.py= file
+    2. Configure the variables =HOST= , =USER= and
+       =PASSWORD= of mysql server in =config.py= file
        #+BEGIN_EXAMPLE
        HOST="localhost"
        USER="root"
@@ -224,11 +217,11 @@
        DEST_DB = "edxapp"
 
        #+END_EXAMPLE
-    6. Run the script
+    3. Set the execution permission to =restore= and run it
        #+BEGIN_EXAMPLE
        chmod +x restore
        ./restore
        #+END_EXAMPLE
-    7. If step(6) is successful delete the =dogwood= database
+    4. If step(6) is successful delete the =dogwood= database
 
   
