@@ -223,5 +223,8 @@
        ./restore
        #+END_EXAMPLE
     4. If step(6) is successful delete the =dogwood= database
+       #+BEGIN_EXAMPLE
+       mysql > drop database dogwood;
+       #+END_EXAMPLE
 
   
