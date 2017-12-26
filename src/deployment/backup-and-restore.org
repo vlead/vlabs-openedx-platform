@@ -164,7 +164,7 @@ if [ $? -ne 0 ]; then
 fi
 
 #+END_SRC
-**  Restore mongodb database
+** Restore mongodb database
 #+NAME: restore-course-db
 #+BEGIN_SRC shell
 mongorestore -drop courses-bkp
@@ -179,68 +179,6 @@ echo "Restore successfully done"
 * Restore user database from dogwood to ginkgo
   This script migrates the user database of Openedx version
   =Dogwood= to =Ginkgo=
-** Dump dogwood user database into mysql database
-   Following are the steps to dump the user database of
-   Openedx =dogwood= into mysql database
-
-  1. Download the user database backup of Openedx =dogwood=
-     version from production machine
-  2. Log into the database
-     #+BEGIN_EXAMPLE
-     mysql -u root
-     #+END_EXAMPLE
-  3. Create a database with name =dogwood=
-     #+BEGIN_EXAMPLE
-     mysql> create database dogwood;
-     #+END_EXAMPLE
-  4. Exit from the mysql server
-     #+BEGIN_EXAMPLE
-     > exit
-     #+END_EXAMPLE
-  5. Import sql file into =dogwood= database
-     #+BEGIN_EXAMPLE
-     mysql -u root dogwood < <file-name>.sql
-     #+END_EXAMPLE
-
-** Steps to run migration script
-   Following are the steps to migrate the user database from
-   Openedx =dogwood= to =ginkgo= version
-
-    1. Clone the repository
-       #+BEGIN_EXAMPLE
-       git clone https://github.com/vlead/vlabs-openedx-platform
-       #+END_EXAMPLE
-    2. Change directory to =vlabs-openedx-platform= and
-       checkout branch to =develop=
-       #+BEGIN_EXAMPLE
-       cd vlabs-openedx-platform
-       git checkout develop
-       #+END_EXAMPLE
-    3. Build the sources
-       #+BEGIN_EXAMPLE
-       make
-       #+END_EXAMPLE
-    4. Changed directory to deployment folder
-       #+BEGIN_EXAMPLE
-       cd build/code/scripts
-       #+END_EXAMPLE
-    5. Configure the variables =HOST= , =USER= and
-       =PASSWORD= of mysql server at =config.py= file
-       #+BEGIN_EXAMPLE
-       HOST="localhost"
-       USER="root"
-       PASSWORD=""
-       SRC_DB = "dogwood"
-       DEST_DB = "edxapp"
-
-       #+END_EXAMPLE
-    6. Run the script
-       #+BEGIN_EXAMPLE
-       chmod +x restore
-       ./restore
-       #+END_EXAMPLE
-    7. If step(6) is successful delete the =dogwood= database
-
 ** Restore  script
    #+NAME: restore
    #+BEGIN_SRC shell
