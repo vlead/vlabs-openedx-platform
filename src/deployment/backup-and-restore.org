@@ -142,6 +142,28 @@ if [ -z $BACKUP_FILE ]; then
 fi
 
 #+END_SRC
+** Configure mongodb parameters      
+    Change the value of =auth= variable from =true= to
+    =false= in =/etc/mongod.conf= file.
+
+#+BEGIN_EXAMPLE
+...
+....
+#auth = true
+auth = false
+....
+....
+#+END_EXAMPLE
+
+#+NAME:  mongo-config
+#+BEGIN_SRC shell
+sed -i 's/auth = true/auth = false/g' /etc/mongod.conf
+if [ $? -ne 0 ]; then
+  echo "Error: Something went wrong during mongod configuration."
+  exit 1;
+fi
+
+#+END_SRC
 
 ** Un tar the backup file
 #+NAME: untar-bkp-file
@@ -316,6 +338,7 @@ if __name__ == "__main__":
 <<conf-restore>>
 <<input-validation>>
 <<untar-bkp-file>>
+<<mongo-config>>
 <<restore-mysql-db>>
 <<restore-course-db>>
 #+END_SRC

@@ -63,7 +63,7 @@
           textOfContentIframe = document.body.innerText;
           console.log("Sender message: " + textOfContentIframe);
           //console.log("Referrer: " + document.referrer);
-          msg = window.parent.postMessage(textOfContentIframe, "http://pages.vlabs.ac.in");
+          msg = window.parent.postMessage(textOfContentIframe, "http://alpha.vlabs.ac.in");
           };
         </script>
       </head>
@@ -71,16 +71,22 @@
       </body>
      </html>
      #+END_SRC
-     In above code snippet =http://pages.vlabs.ac.in= is the
+     In above code snippet =http://alpha.vlabs.ac.in= is the
      destination server name where all post messages will be
      sent.
   10. Edit the file =/etc/nginx/sites-enabled/lms= and add
       the below code snippet
       #+BEGIN_EXAMPLE
-       location @proxy_to_lms_app {
+      ----------
+       location @append_proxy_to_lms_app {
           add_after_body /server/message.html;
-          -------
-          --------
+      -------
+      --------
+      location /dashboard {
+      
+         try_files $uri @append_proxy_to_lms_app;
+      }
+
       #+END_EXAMPLE
   11. Configure x-frame options, by default =x-frame= http
       response header of pages served from OpenEdx are set
@@ -118,7 +124,7 @@
       exit
       #+END_EXAMPLE
       #+BEGIN_EXAMPLE
-      vagrat reload
+      vagrant reload
       #+END_EXAMPLE
   15. Access the =lms= of openedx platform
       #+BEGIN_EXAMPLE
