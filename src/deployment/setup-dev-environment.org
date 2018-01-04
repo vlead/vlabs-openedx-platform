@@ -57,18 +57,18 @@
      =/edx/var/nginx/server-static/message.html=
      #+BEGIN_SRC html
      <html>
-      <head>
-        <script>
-          var postM = function() {
-          textOfContentIframe = document.body.innerText;
-          console.log("Sender message: " + textOfContentIframe);
-          //console.log("Referrer: " + document.referrer);
-          msg = window.parent.postMessage(textOfContentIframe, "http://alpha.vlabs.ac.in");
-          };
-        </script>
-      </head>
-      <body onload="postM();">
-      </body>
+       <head>
+         <script>
+           var postM = function() {
+           textOfContentIframe = document.body.innerText;
+           var json = {message: textOfContentIframe, referrer: document.referrer};
+           console.log(JSON.stringify(json));
+           msg = window.parent.postMessage(JSON.stringify(json), "http://alpha.base4.vlabs.ac.in");
+           };
+         </script>
+       </head>
+       <body onload="postM();">
+       </body>
      </html>
      #+END_SRC
      In above code snippet =http://alpha.vlabs.ac.in= is the
@@ -78,7 +78,7 @@
       the below code snippet
       #+BEGIN_EXAMPLE
       ----------
-       location @append_proxy_to_lms_app {
+      location @append_proxy_to_lms_app {
           add_after_body /server/message.html;
       -------
       --------
