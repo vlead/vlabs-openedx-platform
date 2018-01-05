@@ -163,6 +163,12 @@ if [ $? -ne 0 ]; then
   exit 1;
 fi
 
+service mongod restart
+if [ $? -ne 0 ]; then
+  echo "Error: during mongodb service restart"
+  exit 1;
+fi
+
 #+END_SRC
 
 ** Un tar the backup file
