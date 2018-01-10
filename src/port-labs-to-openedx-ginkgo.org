@@ -18,7 +18,7 @@
      - Note :: Please make sure that the chosen lab is only
                assgined to you
   3. Use =new_lab_id= and make a request to [[http://lds-alpha.base4.vlabs.ac.in][LDS]] service to
-     get the lab information. Use below syntax to make a
+     get the lab information. If =new_lab_id= is null use =old_lab_id=. Use below syntax to make a
      request to LDS and replace =<new-lab-id>= with
      =new_lab_id= value
      #+BEGIN_EXAMPLE
