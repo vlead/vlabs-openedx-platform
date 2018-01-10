@@ -35,7 +35,7 @@
      =<open-edx-data-structures-iiith>= with selected file
   5. Access the Openedx URL
      #+BEGIN_EXAMPLE
-     firefox http://10.2.56.229:18010
+     firefox http://10.2.57.25:18010
      #+END_EXAMPLE
   6. Use below given credentials to login into the OpenedX
      studio
