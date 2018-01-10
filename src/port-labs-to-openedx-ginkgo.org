@@ -50,11 +50,11 @@
      per step(3) data
      - Course Name ::
                       This value should be the =lab_name= with
-                      camel case obtained in step(3)
-
+                      
+                      
      - Organiation :: 
                       Virtual-Labs
-
+                      
      - Course Number ::
                         This value should be the =lab_id=
                         obtained from step(3)
@@ -87,7 +87,7 @@
       #+END_EXAMPLE
   17. Create a tag
       #+BEGIN_EXAMPLE
-      git tag -a v1.0.0 -m "opnedx-dogwood-version"
+      git tag -a v1.0.0 -m "release with old lab_id and exp_id"
       #+END_EXAMPLE
   18. Check whether tag created
       #+BEGIN_EXAMPLE
@@ -111,7 +111,6 @@
       git commit -m "message"
       git push origin master
       #+END_EXAMPLE
-
   22. Update status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
 
 
