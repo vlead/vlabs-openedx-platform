@@ -1,0 +1,67 @@
+#+TITLE: Import labs to OpenedX Ginkgo 
+#+AUTHOR: VLEAD
+#+DATE: [2018-01-10 Wed]
+#+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+  This document has steps to import the labs into OpenedX
+  platform running =Ginkgo= version.
+
+* Port labs to Openedx (Ginkgo version)
+  Following are the steps to import a lab into Openedx
+  1. Visit the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]] for required information to port
+     a lab into Openedx
+  2. Select a lab from the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]] 
+     - Note :: Please make sure that the chosen lab is only
+               assgined to you
+  3. Use =new_lab_id= and make a request to [[http://lds-alpha.base4.vlabs.ac.in][LDS]] service to
+     get the lab information. Use below syntax to make a
+     request to LDS and replace =<new-lab-id>= with
+     =new_lab_id= value
+     #+BEGIN_EXAMPLE
+     firefox http://lds-alpha.base4.vlabs.ac.in/labs?lab_id=<new-lab-id>
+     #+END_EXAMPLE
+     Above command must result a json record with lab
+     information
+  4. From the step(3) get the lab_name and download the
+     appropriate course from the [[http://files.vlabs.ac.in/downloads/edx-tar-balls/][link]]
+     #+BEGIN_EXAMPLE
+     wget http://files.vlabs.ac.in/downloads/edx-tar-balls/<open-edx-data-structures-iiith>.tar.gz
+     #+END_EXAMPLE
+     In above example replace
+     =<open-edx-data-structures-iiith>= with selected file
+  5. Access the Openedx URL
+     #+BEGIN_EXAMPLE
+     firefox http://10.2.56.229:18010
+     #+END_EXAMPLE
+  6. Use below given credentials to login into the OpenedX
+     studio
+     #+BEGIN_EXAMPLE
+     honor@example.com -- > Sripathi,  Madhavi
+     audit@example.com ---> Sravanthi M, Raghupathi
+     verified@example.com --- > Sanchitha , Mrudhvika
+     staff@example.com ---> Shiva, Balamma
+     #+END_EXAMPLE
+     - Note :: Passwords will be communicated in person
+  7. Create a New course and fill up the following details as
+     per step(3) data
+     1) Course Name
+     2) Organization
+     3) Course Number (should be new lab_id from excel shee)
+     4) Course Run
+  8. Import the downloaded course
+  9. Once courses is successfully imported visit the course
+     and
+  10. Change lab_id and exp_id in all pages of =Simulation= section
+      in each experiments
+  11. Change lab_id and exp_id in all feedback integrations
+      both lab level and experiment level
+  12. Once step(10) and step(11) is done export the course
+  13. And version control to the github repository
+
+
+
+
