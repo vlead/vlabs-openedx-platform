@@ -48,21 +48,24 @@
      - Note :: Passwords will be communicated in person
   7. Create a New course and fill up the following details as
      per step(3) data
+     
      - Course Name ::
                       This value should be the =lab_name=
                       obtained in step(3) starting each word
                       with uppercase
-                      
-                      
+                         
      - Organiation :: 
                       Virtual-Labs
                       
      - Course Number ::
                         This value should be the =lab_id=
                         obtained from step(3)
+   
      - Course Run ::
                      Anytime
-     - Note :: If anything went wrong while creation of the
+
+     - Note :: 
+               If anything went wrong while creation of the
                course please inform to admin team
   8. Import the downloaded course
   9. Once course is successfully imported visit the course
@@ -100,12 +103,17 @@
       #+BEGIN_EXAMPLE
       git push origin v1.0.0
       #+END_EXAMPLE
-  20. Rsync the exported course content into cloned
+  20. Draft the release notes in the github repository in
+      =https://github.com/vlabs-on-openedx= organization
+  21. Rsync the exported course content into cloned
       repository
       #+BEGIN_EXAMPLE
       rsync -avz --progress <path-to-course-name-folder>/ <lab-name>/
       #+END_EXAMPLE
-  21. Change directory to =<lab-name>= and push changes to
+
+  22. Remove the course folder =<path-to-course-name-folder>=
+      
+  23. Change directory to =<lab-name>= and push changes to
       github
       #+BEGIN_EXAMPLE
       cd <lab-name>
@@ -113,7 +121,7 @@
       git commit -m "message"
       git push origin master
       #+END_EXAMPLE
-  22. Update the status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
+  24. Update the status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
       - Note :: 
                 Before pasting hosted url in excel sheet
                 replace <ip-address> with =vlabs.ac.in= domain
