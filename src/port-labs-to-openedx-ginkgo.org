@@ -48,13 +48,22 @@
      - Note :: Passwords will be communicated in person
   7. Create a New course and fill up the following details as
      per step(3) data
-     1) Course Name
-     2) Organization
-     3) Course Number (should be new lab_id from excel shee)
-     4) Course Run
+     - Course Name ::
+                      This value should be the =lab_name= with
+                      camel case obtained in step(3)
+
+     - Organiation :: 
+                      virtual-labs
+
+     - Course Number ::
+                        This value should be the =lab_id=
+                        obtained from step(3)
+     - Course Run ::
+                     Anytime
+     - Note :: If anything went wrong while creation of the
+               course please inform to admin team
   8. Import the downloaded course
   9. Once courses is successfully imported visit the course
-     and
   10. Change lab_id and exp_id in all pages of =Simulation= section
       in each experiments
   11. Change lab_id and exp_id in all feedback integrations
