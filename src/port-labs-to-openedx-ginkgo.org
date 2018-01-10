@@ -64,9 +64,9 @@
                course please inform to admin team
   8. Import the downloaded course
   9. Once courses is successfully imported visit the course
-  10. Change lab_id and exp_id in all pages of =Simulation= section
+  10. Change lab_id and exp_id (all in lowercase) in all pages of =Simulation= section
       in each experiments
-  11. Change lab_id and exp_id in all feedback integrations
+  11. Change lab_id and exp_id (all in lowercase) in all feedback integrations
       both lab level and experiment level
   12. Once step(10) and step(11) is done export the course
   13. And version control to the github repository
