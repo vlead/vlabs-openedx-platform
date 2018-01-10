@@ -49,7 +49,9 @@
   7. Create a New course and fill up the following details as
      per step(3) data
      - Course Name ::
-                      This value should be the =lab_name= with
+                      This value should be the =lab_name=
+                      obtained in step(3) starting each word
+                      with uppercase
                       
                       
      - Organiation :: 
