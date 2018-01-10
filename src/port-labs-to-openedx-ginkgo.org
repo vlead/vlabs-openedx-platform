@@ -69,9 +69,10 @@
   11. Change lab_id and exp_id (all in lowercase) in all feedback integrations
       both lab level and experiment level
   12. Publish the course
-  12. Once above steps are done export the course
-  13. And version control the course into the github
+  13. Once above steps are done export the course
+  14. And version control the course into the github
       repository
+  15. Update status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
 
 
 
