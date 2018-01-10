@@ -69,7 +69,9 @@
   11. Change lab_id and exp_id (all in lowercase) in all feedback integrations
       both lab level and experiment level
   12. Once step(10) and step(11) is done export the course
-  13. And version control to the github repository
+  13. And version control the course into the github
+      repository
+
 
 
 
