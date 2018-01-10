@@ -53,7 +53,7 @@
                       camel case obtained in step(3)
 
      - Organiation :: 
-                      virtual-labs
+                      Virtual-Labs
 
      - Course Number ::
                         This value should be the =lab_id=
