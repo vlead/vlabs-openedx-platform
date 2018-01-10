@@ -64,15 +64,55 @@
                course please inform to admin team
   8. Import the downloaded course
   9. Once course is successfully imported visit the course
-  10. Change lab_id and exp_id (all in lowercase) in all pages of =Simulation= section
-      in each experiments
-  11. Change lab_id and exp_id (all in lowercase) in all feedback integrations
-      both lab level and experiment level
+  10. Change =lab_id= and =exp_id= (all in lowercase) in
+      =Simulation= section of all the experiments
+  11. Also change =lab_id= and =exp_id= (all in lowercase)
+      in all feedback integration sections (i.e both lab
+      level and experiment level)
   12. Publish the course
-  13. Once above steps are done export the course
-  14. And version control the course into the github
+  13. Once above steps are done export the course and
+      download =<course-name>=.tar.gz file
+  14. Untar the exported course
+      #+BEGIN_EXAMPLE
+      tar -xvf <course-name>.tar.gz
+      #+END_EXAMPLE
+  15. Clone the respective lab sources from the organization
+      =https://github.com/vlabs-on-openedx=
+      #+BEGIN_EXAMPLE
+      git clone https://github.com/vlabs-on-openedx/<lab-name>.git
+      #+END_EXAMPLE
+  16. Change directory to =<lab-name>=
+      #+BEGIN_EXAMPLE
+      cd <lab-name>
+      #+END_EXAMPLE
+  17. Create a tag
+      #+BEGIN_EXAMPLE
+      git tag -a v1.0.0 -m "opnedx-dogwood-version"
+      #+END_EXAMPLE
+  18. Check whether tag created
+      #+BEGIN_EXAMPLE
+      git tag
+      #+END_EXAMPLE
+      Above step should list =v1.0.0= version
+  19. Push the tag
+      #+BEGIN_EXAMPLE
+      git push origin v1.0.0
+      #+END_EXAMPLE
+  20. Rsync the exported course content into cloned
       repository
-  15. Update status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
+      #+BEGIN_EXAMPLE
+      rsync -avz --progress <path-to-course-name-folder>/ <lab-name>/
+      #+END_EXAMPLE
+  21. Change directory to =<lab-name>= and push changes to
+      github
+      #+BEGIN_EXAMPLE
+      cd <lab-name>
+      git add <files>
+      git commit -m "message"
+      git push origin master
+      #+END_EXAMPLE
+
+  22. Update status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
 
 
 
