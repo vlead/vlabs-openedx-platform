@@ -10,35 +10,37 @@
   This document has steps to import the labs into OpenedX
   platform running =Ginkgo= version.
 
-* Port labs to Openedx (Ginkgo version)
-  Following are the steps to import a lab into Openedx
-  1. Visit the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]] for required information to port
-     a lab into Openedx
-  2. Select a lab from the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]] 
-     - Note :: Please make sure that the chosen lab is only
-               assgined to you
-  3. Use =new_lab_id= and make a request to [[http://lds-alpha.base4.vlabs.ac.in][LDS]] service to
-     get the lab information. If =new_lab_id= is null use =old_lab_id=. Use below syntax to make a
-     request to LDS and replace =<new-lab-id>= with
-     =new_lab_id= value
+* Port labs to Openedx
+  Follow below steps to import a lab into OpenedX platform
+  running Ginkgo version. Below steps are well tested
+  against a sample lab =Population Ecology Virtual Lab
+  I=. Please follow the same procedure for the rest of the
+  labs
+
+  1. Visit the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]] for all the lab information
+  2. Select a lab from the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]] against assignee
+  3. Against selected lab pick =new_lab_id= (i.e biotech18)
+     and make a request to [[http://lds-alpha.base4.vlabs.ac.in][LDS]] service to get the lab
+     information. If =new_lab_id= is null use
+     =old_lab_id=. Use below command to make a request to
+     LDS with lab_id as =biotech18=
      #+BEGIN_EXAMPLE
-     firefox http://lds-alpha.base4.vlabs.ac.in/labs?lab_id=<new-lab-id>
+     firefox http://lds-alpha.base4.vlabs.ac.in/labs?lab_id=biotech18
      #+END_EXAMPLE
      Above command must result a json record with lab
-     information
-  4. From the step(3) get the lab_name and download the
-     appropriate course from the [[http://files.vlabs.ac.in/downloads/edx-tar-balls/][link]]
+     information otherwise contact development team
+  4. Use JSON information obtained from step(3) (i.e lab_name)
+     and download the appropriate lab sources from the [[http://files.vlabs.ac.in/downloads/edx-tar-balls/][link]]
      #+BEGIN_EXAMPLE
-     wget http://files.vlabs.ac.in/downloads/edx-tar-balls/<open-edx-data-structures-iiith>.tar.gz
+     wget http://files.vlabs.ac.in/downloads/edx-tar-balls/open-edx-population-ecology-I-amrita.tar.gz
      #+END_EXAMPLE
-     In above example replace
-     =<open-edx-data-structures-iiith>= with selected file
+
   5. Access the Openedx URL
      #+BEGIN_EXAMPLE
      firefox http://10.2.57.25:18010
      #+END_EXAMPLE
-  6. Use below given credentials to login into the OpenedX
-     studio
+  6. Use below given credentials mapped to your name and
+     login into the OpenedX studio
      #+BEGIN_EXAMPLE
      honor@example.com -- > Sripathi,  Madhavi
      audit@example.com ---> Sravanthi M, Raghupathi
@@ -46,12 +48,13 @@
      staff@example.com ---> Shiva, Balamma
      #+END_EXAMPLE
      - Note :: Passwords will be communicated in person
-  7. Create a New course and fill up the following details as
-     per step(3) data
+  7. After successful login, please click on =New Course=
+     button to create new course and fill up the details as
+     per obtained JSON information from step(3)
      
      - Course Name ::
                       This value should be the =lab_name=
-                      obtained in step(3) starting each word
+                      obtained in step(3) start each word
                       with uppercase
                          
      - Organiation :: 
@@ -69,26 +72,29 @@
                course please inform to admin team
   8. Import the downloaded course
   9. Once course is successfully imported visit the course
-  10. Change =lab_id= and =exp_id= (all in lowercase) in
-      =Simulation= section of all the experiments
-  11. Also change =lab_id= and =exp_id= (all in lowercase)
-      in all feedback integration sections (i.e both lab
-      level and experiment level)
-  12. Publish the course
+  10. Change =lab_id= and =exp_id= (all should be in
+      lowercase) in =Simulation= section of all the
+      experiments
+  11. Also change =lab_id= and =exp_id= (all should in
+      lowercase) in all feedback integration sections (i.e
+      both lab level and experiment level)
+  12. Publish all the experiments in the course
   13. Once above steps are done export the course and
-      download =<course-name>=.tar.gz file
+      download.
   14. Untar the exported course
       #+BEGIN_EXAMPLE
-      tar -xvf <course-name>.tar.gz
+      cd ~
+      tar -xvf course.js8WAY.tar.gz
       #+END_EXAMPLE
-  15. Clone the respective lab sources from the organization
-      =https://github.com/vlabs-on-openedx=
+  15. Search for the lab_name in the organization
+      =https://github.com/vlabs-on-openedx= and clone the repository
       #+BEGIN_EXAMPLE
-      git clone https://github.com/vlabs-on-openedx/<lab-name>.git
+      cd ~
+      git clone https://github.com/vlabs-on-openedx/open-edx-population-ecology-I-amrita
       #+END_EXAMPLE
-  16. Change directory to =<lab-name>=
+  16. Change directory to =open-edx-population-ecology-I-amrita=
       #+BEGIN_EXAMPLE
-      cd <lab-name>
+      cd open-edx-population-ecology-I-amrita
       #+END_EXAMPLE
   17. Create a tag
       #+BEGIN_EXAMPLE
@@ -104,27 +110,34 @@
       git push origin v1.0.0
       #+END_EXAMPLE
   20. Draft the release notes in the github repository in
-      =https://github.com/vlabs-on-openedx= organization
+      =https://github.com/vlabs-on-openedx/open-edx-population-ecology-I-amrita=
+      organization
   21. Rsync the exported course content into cloned
       repository
       #+BEGIN_EXAMPLE
-      rsync -avz --progress <path-to-course-name-folder>/ <lab-name>/
+      rsync -avz --progress courses/ open-edx-population-ecology-I-amrita/
       #+END_EXAMPLE
 
-  22. Remove the course folder =<path-to-course-name-folder>=
-      
-  23. Change directory to =<lab-name>= and push changes to
-      github
+  22. Remove the course folder
       #+BEGIN_EXAMPLE
-      cd <lab-name>
+      cd ~
+      rm -rf course
+      #+END_EXAMPLE
+      
+  23. Change directory to
+      =open-edx-population-ecology-I-amrita= and push
+      changes to github
+      #+BEGIN_EXAMPLE
+      cd open-edx-population-ecology-I-amrita
       git add <files>
-      git commit -m "message"
+      git commit -m "Edited new lab_name and exp_ids"
       git push origin master
       #+END_EXAMPLE
   24. Update the status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
+      against chosen lab
       - Note :: 
-                Before pasting hosted url in excel sheet
-                replace <ip-address> with =vlabs.ac.in= domain
+                Replace hosted_url http://<ip-address> with
+                =https://vlabs.ac.in= domain
 
 
 
