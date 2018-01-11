@@ -133,8 +133,17 @@
       git commit -m "Edited new lab_name and exp_ids"
       git push origin master
       #+END_EXAMPLE
-  24. Update the status and hosted url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
+  24. Access the Openedx dashboard and search for the course
+      that you imported, click on the lab and copy the url
+     #+BEGIN_EXAMPLE
+     firefox http://10.2.57.25/dashboard
+     #+END_EXAMPLE
+
+  25. Update the obtained url in the [[https://docs.google.com/spreadsheets/d/1JQRB_hGMcKkN05ZaEtgJpbi06k6OzP35m8xi9DhUMyI/edit#gid=367642649][excel sheet]]
       against chosen lab
+      #+BEGIN_EXAMPLE
+      https://vlabs.ac.in/courses/course-v1:Virtual-Labs+biotech18+Anytime/about
+      #+END_EXAMPLE
       - Note :: 
                 Replace hosted_url http://<ip-address> with
                 =https://vlabs.ac.in= domain
