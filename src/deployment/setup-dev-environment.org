@@ -135,7 +135,6 @@
   Following are the steps to restore the backup which was
   taken from the running instance of openedx platform
   =ginkgo= version
-
   1. Clone the repository
      #+BEGIN_EXAMPLE
      sudo su -
@@ -160,11 +159,18 @@
      #+BEGIN_EXAMPLE
      cd build/code/scripts
      #+END_EXAMPLE
-  6. Get the Openedx platform =ginkgo= backup file
+** How to backup
+  6. Set execute permission to =backup= and run the script
+     #+BEGIN_EXAMPLE
+     chmod +x backup
+     ./backup
+     #+END_EXAMPLE
+  7. Get the latest Openedx platform =ginkgo= backup file
+     Ex: Download the backup file using below step
      #+BEGIN_EXAMPLE
      wget http://files.vlabs.ac.in/downloads/edx-ginkgo-backups/openedx-ginkgo-with-90-courses.tar
      #+END_EXAMPLE
-  7. Set execute permission to =restore-same-version= and the
+  8. Set execute permission to =restore-same-version= and the
      the script by passing the argument as backup tar file
      in =.tar= file
      #+BEGIN_EXAMPLE
