@@ -159,14 +159,14 @@
      #+BEGIN_EXAMPLE
      cd build/code/scripts
      #+END_EXAMPLE
-  - How to backup ::
   6. Set execute permission to =backup= and run the script
      #+BEGIN_EXAMPLE
      chmod +x backup
      ./backup
      #+END_EXAMPLE
   7. Get the latest Openedx platform =ginkgo= backup file
-     Ex: Download the backup file using below step
+     
+     Example: Download the backup file using below step
      #+BEGIN_EXAMPLE
      wget http://files.vlabs.ac.in/downloads/edx-ginkgo-backups/openedx-ginkgo-with-90-courses.tar
      #+END_EXAMPLE
