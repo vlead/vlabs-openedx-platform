@@ -159,7 +159,7 @@
      #+BEGIN_EXAMPLE
      cd build/code/scripts
      #+END_EXAMPLE
-** How to backup
+  - How to backup ::
   6. Set execute permission to =backup= and run the script
      #+BEGIN_EXAMPLE
      chmod +x backup
