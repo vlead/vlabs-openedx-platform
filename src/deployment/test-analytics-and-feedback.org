@@ -1,0 +1,35 @@
+#+TITLE: Test Analytics and Feedback for OpenedX Labs
+#+AUTHOR: VLEAD
+#+DATE: [2017-12-26 Tue]
+#+SETUPFILE: ./org-templates/level-0.org
+#+TAGS: boilerplate(b)
+#+EXCLUDE_TAGS: boilerplate
+#+OPTIONS: ^:nil
+
+* Introduction
+  This document verifies the feedback and usage works for
+  all the openedx ported labs
+* Test feedback
+  1) Login into the OpenedX
+  2) Visit the lab
+  3) Submit lab level and experiment level feedbacks
+  4) Visit the following url and count the total number of
+     json records by pasting the records at [[https://jsoneditoronline.org/][link]]. The count
+     should be increased with number feedback added to this
+     lab. This assumes feedback integration is working
+     #+BEGIN_EXAMPLE
+     #http://feedback.base1.vlabs.ac.in/feedback_dump?date=18-01-2018&key=defaultkey
+     http://feedback.base1.vlabs.ac.in/feedback_dump?date=dd-mm-YYYY&key=defaultkey
+     #+END_EXAMPLE
+  5) Do above all steps for remaining labs
+* Test usage
+  1) Login into the OpenedX
+  2) Visit the lab
+  3) Click on simulation(s) sections
+  4) Visit the following url and search for the lab, the
+     usage should be incremented by one for each simulation
+     page opened
+     #+BEGIN_EXAMPLE
+     http://analytics.base1.vlabs.ac.in/analytics/labs/openedx
+     #+END_EXAMPLE
+  5) Do above all steps for remaining labs

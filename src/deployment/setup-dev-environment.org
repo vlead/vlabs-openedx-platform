@@ -52,8 +52,8 @@
      #+END_EXAMPLE
   9. Configure post message, following code snippet is to be
      configured in =openedx= server. This is required to
-     send the post messages to destination server. Place the
-     following snippet inside
+     send the post messages to destination server for the
+     authentication. Place the following snippet inside
      =/edx/var/nginx/server-static/message.html=
      #+BEGIN_SRC html
      <html>
@@ -74,9 +74,53 @@
      In above code snippet =http://alpha.vlabs.ac.in= is the
      destination server name where all post messages will be
      sent.
-  10. Edit the file =/etc/nginx/sites-enabled/lms= and add
+  10. Configure post message, following code snippet is to
+      be configured in =openedx= server. This is required to
+      send the post messages to destination server to serve
+      the utils. Place the following snippet inside
+      =/edx/var/nginx/server-static/utils.html=. And
+      configure the =usageUrl= and =feedbackBaseUrl=
+      variable values as per the environment (e.g test,
+      stage or production)
+      #+BEGIN_EXAMPLE
+      <html>
+      <head>
+        <script>
+          var usageUrl = "http://analytics.base1.vlabs.ac.in/";
+          var feedbackBaseUrl = "http://feedback.base1.vlabs.ac.in"
+          var key = "defaultkey";
+
+          var submitUsage = function(labId, expName, labName, userId, expId) {
+          var xhttp = new XMLHttpRequest();
+          var urlstr = usageUrl + userId + "," + labId + "," + labName + "," + expId + "," + expName;
+          xhttp.open("GeT", urlstr, true);
+          xhttp.send();
+          };
+
+          var submitFeedback = function(labId, labName, expId, expName, userId) {
+          if (expId == "" || expName == "")
+          {
+          feedback_url = feedbackBaseUrl + "/feedback?lab_name=" + labName + "&key=" + key + "&user_id=" + userId;
+          window.open(feedback_url, '_blank');
+          }
+          else {
+          ///Experiment wise feedback
+          feedback_url = feedbackBaseUrl + "/feedback?lab_name=" + labName + "&exp_name=" + expName + "&key=" + key + "&user_id=" + userId;
+          window.open(feedback_url, '_blank');
+          }
+          };
+        </script>
+      </head>
+    </html>
+      #+END_EXAMPLE
+
+  11. Edit the file =/etc/nginx/sites-enabled/lms= and add
       the below code snippet
       #+BEGIN_EXAMPLE
+      ----------
+      location @proxy_to_lms_app {
+      add_after_body /server/utils.html;
+      ----------
       ----------
       location @append_proxy_to_lms_app {
           add_after_body /server/message.html;
@@ -88,7 +132,7 @@
       }
 
       #+END_EXAMPLE
-  11. Configure x-frame options, by default =x-frame= http
+  12. Configure x-frame options, by default =x-frame= http
       response header of pages served from OpenEdx are set
       to =DENY= for security reasons. To enable loading all
       these pages inside iframes this is to be set to
@@ -99,7 +143,7 @@
       #x_frame_option = 'DENY'
       x_frame_option = 'ALLOW'
       #+END_EXAMPLE
-  12. Delete header and footer pages, to disable =header= and
+  13. Delete header and footer pages, to disable =header= and
       =footer= pages from openedx comment out below lines
       from file
       =/edx/app/edxapp/edx-platform/lms/templates/main.html=
@@ -114,19 +158,19 @@
       ##    <%include file="${static.get_template_path('footer.html')}" />
       ##% endif
       #+END_EXAMPLE
-  13. Restart the services on Open edX to pick the new
+  14. Restart the services on Open edX to pick the new
       configuration changes.
       #+BEGIN_EXAMPLE
       /edx/bin/supervisorctl restart edxapp:
       #+END_EXAMPLE
-  14. Exit from the VM and reload the vagrant machine
+  15. Exit from the VM and reload the vagrant machine
       #+BEGIN_EXAMPLE
       exit
       #+END_EXAMPLE
       #+BEGIN_EXAMPLE
       vagrant reload
       #+END_EXAMPLE
-  15. Access the =lms= of openedx platform
+  16. Access the =lms= of openedx platform
       #+BEGIN_EXAMPLE
       firefox <ip_address>
       #+END_EXAMPLE
