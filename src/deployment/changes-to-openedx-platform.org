@@ -1,7 +1,7 @@
 #+TITLE: Modifyting Reverse Proxy on Open edX platform for altering content.
 #+AUTHOR: VLEAD
 #+DATE: [2017-11-27 Mon]
-#+SETUPFILE: ./org-templates/level-0.org
+#+SETUPFILE: ../org-templates/level-1.org
 #+TAGS: boilerplate(b)
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
@@ -9,8 +9,366 @@
 * Introduction
   This document lists steps to alter the content before it
   is served by Open edX.
+* Configure nginx to include user defined code.
+  Nginx web server is configured to append new html to the
+  default content of a route.
+** Provision to post a message
+   Whenever =dashboard= route is requested, the vlabs
+   landing pages is required to know the content of the
+   dashboard.  To enable this, a javascript snippet is
+   appended along with the default =dashboard= content. 
 
-* Create HTML and JS
+   Place the following snippet inside
+   =/edx/var/nginx/server-static/message.html=.  In the
+   below code snippet =http://alpha.vlabs.ac.in= is the name
+   of the service hosting vlabs landing pages where all post
+   messages will be sent.
+
+#+BEGIN_SRC html
+<html>
+  <head>
+    <script>
+      var postM = function() {
+      textOfContentIframe = document.body.innerText;
+      var json = {message: textOfContentIframe, referrer: document.referrer};
+      console.log(JSON.stringify(json));
+      msg = window.parent.postMessage(JSON.stringify(json), "http://alpha.base4.vlabs.ac.in");
+      };
+    </script>
+  </head>
+  <body onload="postM();">
+  </body>
+</html>
+#+END_SRC
+
+** Append JS functions for every course page. 
+   Javascript functions to post to feedback and usage
+   services are required for the course pages.  To provide
+   this functionality the following code snippet is
+   configured in =openedx= server.  
+
+   Place the following snippet inside
+   =/edx/var/nginx/server-static/utils.html=.  Also,
+   configure =usageUrl= and =feedbackBaseUrl= variables as
+   per the environment (e.g test, stage or production).
+#+BEGIN_SRC html
+<html>
+  <head>
+    <script>
+      var usageUrl = "http://analytics.base1.vlabs.ac.in/";
+      var feedbackBaseUrl = "http://feedback.base1.vlabs.ac.in"
+      var key = "defaultkey";
+
+      var submitUsage = function(labId, expName, labName, userId, expId) {
+      var xhttp = new XMLHttpRequest();
+      var urlstr = usageUrl + userId + "," + labId + "," + labName + "," + expId + "," + expName;
+      xhttp.open("GeT", urlstr, true);
+      xhttp.send();
+      };
+
+      var submitFeedback = function(labId, labName, expId, expName, userId) {
+      if (expId == "" || expName == "")
+      {
+      feedback_url = feedbackBaseUrl + "/feedback?lab_name=" + labName + "&key=" + key + "&user_id=" + userId;
+      window.open(feedback_url, '_blank');
+      }
+      else {
+      ///Experiment wise feedback
+      feedback_url = feedbackBaseUrl + "/feedback?lab_name=" + labName + "&exp_name=" + expName + "&key=" + key + "&user_id=" + userId;
+      window.open(feedback_url, '_blank');
+      }
+      };
+    </script>
+  </head>
+</html>
+
+#+END_SRC
+
+
+** Configure the routes
+   Backup the original file =lms= as =lms.bk= and copy the
+   below content to the file =lms= at
+   =/edx/app/nginx/sites-available/=.  Here, the routes are
+   configured only for http.  The same =server=
+   configuration is replicated for https while =listen= is
+   changed to =443=.
+   
+#+BEGIN_SRC html
+upstream lms-backend {
+            server 127.0.0.1:8000 fail_timeout=0;
+    
+}
+
+
+server {
+  # LMS configuration file for nginx, templated by ansible
+
+  
+  # error pages
+  error_page 504 /server/server-error.html;
+  error_page 502 /server/server-error.html;
+  error_page 500 /server/server-error.html;
+  
+  listen 80 default_server;
+
+  
+  # Prevent invalid display courseware in IE 10+ with high privacy settings
+  add_header P3P 'CP="Open edX does not have a P3P policy."';
+
+
+  # Nginx does not support nested condition or or conditions so
+  # there is an unfortunate mix of conditonals here.
+    
+  access_log /edx/var/log/nginx/access.log p_combined;
+  error_log /edx/var/log/nginx/error.log error;
+
+  # CS184 requires uploads of up to 4MB for submitting screenshots.
+  # CMS requires larger value for course assest, values provided
+  # via hiera.
+  client_max_body_size 4M;
+
+  rewrite ^(.*)/favicon.ico$ /static/images/favicon.ico last;
+
+  
+  # Blackholes an archive of python library files that instructors
+  # may provide for sandboxed python problem types, the internal
+  # directive will result in nginx emitting an nginx 404. Users
+  # will not be redirected to the application 404 page.
+  location ~* python_lib.zip {
+    internal;
+  }
+  
+# Common settings used across nginx configurations
+
+# Disables server version feedback on pages and in headers
+server_tokens off;
+
+  location @proxy_to_lms_app {
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    
+    # newrelic-specific header records the time when nginx handles a request.
+    proxy_set_header X-Queue-Start "t=${msec}";
+
+    proxy_set_header Host $http_host;
+
+    proxy_redirect off;
+    proxy_pass http://lms-backend;
+  }
+
+  location @proxy_to_append_utils_lms_app {
+    add_after_body /server/utils.html;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    
+    # newrelic-specific header records the time when nginx handles a request.
+    proxy_set_header X-Queue-Start "t=${msec}";
+
+    proxy_set_header Host $http_host;
+
+    proxy_redirect off;
+    proxy_pass http://lms-backend;
+  }
+
+  location @proxy_to_append_lms_app {
+    add_after_body /server/message.html;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Forwarded-Port $server_port;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    
+    # newrelic-specific header records the time when nginx handles a request.
+    proxy_set_header X-Queue-Start "t=${msec}";
+
+    proxy_set_header Host $http_host;
+
+    proxy_redirect off;
+    proxy_pass http://lms-backend;
+  }
+
+  location / {
+    
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  location /dashboard {
+    
+    try_files $uri @proxy_to_append_lms_app;
+  }
+
+  # /login?next=<any image> can be used by 3rd party sites in <img> tags to
+  # determine whether a user on their site is logged into edX.
+  # The most common image to use is favicon.ico.
+  location /login {
+    
+    if ( $arg_next ~* "favicon.ico" ) {
+      return 403;
+    }
+
+    try_files $uri @proxy_to_lms_app;
+  }
+
+
+  # No basic auth for /segmentio/event
+  location /segmentio/event {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # The api is accessed using OAUTH2 which
+  # uses the authorization header so we can't have
+  # basic auth on it as well.
+  location /api {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  #enterprise API
+  location /enterprise/api {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # Need a separate location for the image uploads endpoint to limit upload sizes
+  location ~ ^/api/profile_images/[^/]*/[^/]*/upload$ {
+    try_files $uri @proxy_to_lms_app;
+    client_max_body_size 1049576;
+  }
+
+  location /notifier_api {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  location /user_api {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth security on the github_service_hook url, so that github can use it for cms
+  location /github_service_hook {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth security on oauth2 endpoint
+  location /oauth2 {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth security on third party auth endpoints
+  location /auth {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth security on assets
+  location /c4x {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  location /asset {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth security on the heartbeat url, so that ELB can use it
+  location /heartbeat {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth on the LTI provider endpoint, it does OAuth1
+  location /lti_provider {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  # No basic auth on LTI component grade.
+  location ~ /handler_noauth {
+    try_files $uri @proxy_to_lms_app;
+  }
+
+  location /courses {
+    try_files $uri @proxy_to_append_utils_lms_app;
+  }
+
+location ~ ^/media/(?P<file>.*) {
+    root /edx/var/edxapp/media;
+    try_files /$file =404;
+    expires 31536000s;
+}
+
+      # static pages for server status
+  location ~ ^/server/(?P<file>.*) {
+      root /edx/var/nginx/server-static;
+      try_files /$file =404;
+  }
+
+  location ~ ^/static/(?P<file>.*) {
+    root /edx/var/edxapp;
+    try_files /staticfiles/$file /course_static/$file =404;
+
+    # return a 403 for static files that shouldn't be
+    # in the staticfiles directory
+    location ~ ^/static/(?:.*)(?:\.xml|\.json|README.TXT) {
+        return 403;
+    }
+
+    # http://www.red-team-design.com/firefox-doesnt-allow-cross-domain-fonts-by-default
+    location ~ "/static/(?P<collected>.*\.[0-9a-f]{12}\.(eot|otf|ttf|woff|woff2)$)" {
+        expires max;
+        add_header Access-Control-Allow-Origin *;
+        try_files /staticfiles/$collected /course_static/$collected =404;
+    }
+
+    # Set django-pipelined files to maximum cache time
+    location ~ "/static/(?P<collected>.*\.[0-9a-f]{12}\..*)" {
+        expires max;
+        # Without this try_files, files that have been run through
+        # django-pipeline return 404s
+        try_files /staticfiles/$collected /course_static/$collected =404;
+    }
+
+    # Set django-pipelined files for studio to maximum cache time
+    location ~ "/static/(?P<collected>[0-9a-f]{7}/.*)" {
+        expires max;
+
+        # Without this try_files, files that have been run through
+        # django-pipeline return 404s
+        try_files /staticfiles/$collected /course_static/$collected =404;
+    }
+
+    # Expire other static files immediately (there should be very few / none of these)
+    expires 300;
+  }
+
+
+}
+#+END_SRC
+
+* Configure x-frame options
+  By default =x-frame= http response header of pages served
+  from OpenEdx are set to =DENY= for security reasons. To
+  enable loading all these pages inside iframes this is to
+  be set to =ALLOW=.  To enable this feature change
+  =x_frame_option= value from =DENY= to =ALLOW= in
+  =/edx/app/edxapp/edx-platform/common/djangoapps/third_party_auth/decorators.py=
+  #+BEGIN_EXAMPLE
+  #x_frame_option = 'DENY'
+  x_frame_option = 'ALLOW'
+  #+END_EXAMPLE
+
+* Delete header and footer pages
+  Header and footer are disbled by commenting the =header=
+  and =footer= pages from openedx comment out below lines
+  from file
+  =/edx/app/edxapp/edx-platform/lms/templates/main.html=
+  #+BEGIN_EXAMPLE
+  ##<%static:optional_include_mako file="body-initial.html" is_theming_enabled="True" />
+  ## % if not disable_header:
+  ##   <%include file="${static.get_template_path('header.html')}" args="online_help_token=online_help_token" />
+  ## <%include file="/preview_menu.html" />
+  ##% endif
+
+  ##  % if not disable_footer:
+  ##    <%include file="${static.get_template_path('footer.html')}" />
+  ##% endif
+  #+END_EXAMPLE
+
+* COMMENT Create HTML and JS
+  This is not necessary. 
   Insert JS code in an html file to remove the header and
   footer of a default Open edX page.  The file
   =alter-content.html= is created at location
@@ -45,20 +403,6 @@
      <body onload="delHeaderAndFooter();">
      </body>
    </html>
-  #+END_EXAMPLE
-
-* Configure nginx reverse proxy
-  Reverse proxy on Open edX platform is configured to add
-  the file =alter-content.html= to every response.  Add the
-  below line to the directive =location @proxy_to_lms_app=
-  in the file =/etc/nginx/sites-enabled/lms=
-  #+BEGIN_EXAMPLE
-   location @proxy_to_lms_app {
-    add_after_body /server/alter-content.html;
-    ------
-    ------
-
-   }
   #+END_EXAMPLE
 
 * Restart the services

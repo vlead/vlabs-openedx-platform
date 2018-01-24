@@ -1,7 +1,7 @@
 #+TITLE: Test Analytics and Feedback for OpenedX Labs
 #+AUTHOR: VLEAD
 #+DATE: [2017-12-26 Tue]
-#+SETUPFILE: ./org-templates/level-0.org
+#+SETUPFILE: ../org-templates/level-1.org
 #+TAGS: boilerplate(b)
 #+EXCLUDE_TAGS: boilerplate
 #+OPTIONS: ^:nil
