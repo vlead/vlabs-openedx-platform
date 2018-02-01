@@ -65,7 +65,7 @@
          xhttp.open("POST", usageUrl);
          xhttp.setRequestHeader("Content-Type", "application/json");
          var payload = {lab_id: labId, lab_name: labName, exp_id: expId, exp_name: expName, user_id: userId};
-         xmlhttp.send(JSON.stringify(payload));
+         xhttp.send(JSON.stringify(payload));
 
       };
 
