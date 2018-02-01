@@ -55,15 +55,18 @@
 <html>
   <head>
     <script>
-      var usageUrl = "http://analytics.base1.vlabs.ac.in/";
+      var usageUrl = "http://analytics.base1.vlabs.ac.in/openedx/add_usage";
       var feedbackBaseUrl = "http://feedback.base1.vlabs.ac.in"
       var key = "defaultkey";
 
       var submitUsage = function(labId, expName, labName, userId, expId) {
-      var xhttp = new XMLHttpRequest();
-      var urlstr = usageUrl + userId + "," + labId + "," + labName + "," + expId + "," + expName;
-      xhttp.open("GeT", urlstr, true);
-      xhttp.send();
+
+         var xhttp = new XMLHttpRequest();
+         xhttp.open("POST", usageUrl);
+         xhttp.setRequestHeader("Content-Type", "application/json");
+         var payload = {lab_id: labId, lab_name: labName, exp_id: expId, exp_name: expName, user_id: userId};
+         xmlhttp.send(JSON.stringify(payload));
+
       };
 
       var submitFeedback = function(labId, labName, expId, expName, userId) {
