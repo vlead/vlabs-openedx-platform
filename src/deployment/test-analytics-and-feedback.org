@@ -35,7 +35,7 @@
   3) Visit the following url and search for the lab, note
      down the usage count
      #+BEGIN_EXAMPLE
-     http://analytics.base1.vlabs.ac.in/analytics/labs/openedx
+     http://analytics-service-beta.base1.vlabs.ac.in/analytics/labs/openedx
      #+END_EXAMPLE
 
   4) Click on simulation(s) sections
@@ -43,6 +43,6 @@
      usage value should be incremented by one for each simulation
      page opened campared to step(3) count
      #+BEGIN_EXAMPLE
-     http://analytics.base1.vlabs.ac.in/analytics/labs/openedx
+     http://analytics-service-beta.base1.vlabs.ac.in/analytics/labs/openedx
      #+END_EXAMPLE
   6) Do above all steps for remaining labs
