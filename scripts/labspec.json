@@ -44,7 +44,7 @@
     "build_requirements": {
       "platform": {
         "os": "ubuntu",
-        "osVersion": "12",
+        "osVersion": "16.04",
         "arch": "x64",
         "service_pack": "",
         "installer": [
@@ -53,13 +53,17 @@
           "configure": [],
           "pre_build": [],
           "build": [
+            "apt-get update -y",
+            "apt-get install emacs -y",
             "cd ../;make build"
           ],
           "post_build": [
-            "sed -i 's_DocumentRoot /var/www_DocumentRoot /var/www/runtime_' /etc/apache2/sites-available/default",
-            "cp -R ../build/code/* /var/www/",
-            "chmod -R 755 /var/www",
-            "service apache2 restart"
+            "rsync -avz ../build/code/deployment/message.html /edx/var/nginx/server-static/message.html",
+            "rsync -avz ../build/code/deployment/message.html /edx/var/nginx/server-static/utils.html",
+            "rsync -avz ../build/code/deployment/lms /edx/app/nginx/sites-available/lms",
+            "rsync -avz ../build/code/deployment/decorators.py /edx/app/edxapp/edx-platform/common/djangoapps/third_party_auth/decorators.py",
+            "rsync -avz ../build/code/deployment/main.html /edx/app/edxapp/edx-platform/lms/templates/main.html",
+            "/edx/bin/supervisorctl restart edxapp:"
           ],
           "status": []
         }
@@ -68,7 +72,7 @@
     "runtime_requirements": {
       "platform": {
         "os": "ubuntu",
-        "osVersion": "12",
+        "osVersion": "16.04",
         "arch": "x64",
         "servicepack": "",
         "hosting": "dedicated",
