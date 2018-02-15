@@ -3,3 +3,32 @@
   Openedx platform running =Ginkgo= version
 * Setup development environment
   Follow [[src/deployment/index.org][documentation]] to setup the development environment
+* Post installation configuration
+  1. Configure feedback and analytics urls in
+     =/edx/var/nginx/server-static/message.html=
+     #+BEGIN_EXAMPLE
+     -----
+     -----
+     var usageUrl = "http://analytics.base1.vlabs.ac.in/openedx/add_usage";
+     var feedbackBaseUrl = "http://feedback.base1.vlabs.ac.in"
+     -----
+     -----
+     #+END_EXAMPLE
+
+  2. Configure post message url in
+     =/edx/var/nginx/server-static/utils.html=
+     #+BEGIN_EXAMPLE
+     ----
+     ----
+     msg = window.parent.postMessage(JSON.stringify(json), "https://vlabs.ac.in");     
+     ----
+     ----
+     #+END_EXAMPLE
+
+  3. Restart =edx= services
+     #+BEGIN_EXAMPLE
+     /edx/bin/supervisorctl restart edxapp:
+     #+END_EXAMPLE
+
+  4. Configure email service
+     

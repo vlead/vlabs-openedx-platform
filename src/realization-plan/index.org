@@ -17,13 +17,17 @@
   |   | S. | Mi | Req | Milestone                                      | Plan | Status | Est | Act | Issues |
   |   | no | no | Map |                                                |      |        | hrs | hrs |        |
   |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
-  |   | 1. | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][1]]  |     | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][upgrade openedx version from dogwood to ginkgo]] | [[Fix back button functionality][ref]]  | Open   | 4   | 0   | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][ref]]    |
+  |   | 1. | [[https://github.com/vlead/vlabs-openedx-platform/milestone/2][2]]  |     | [[https://github.com/vlead/vlabs-openedx-platform/milestone/2][ADS Deployment]]                                 | [[ads deployment][ref]]  | Open   |  25 |   0 | [[https://github.com/vlead/vlabs-openedx-platform/milestone/2][ref]]    |
   |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
-  |   |    |    |     | Total                                          |      |        | 4   | 0   |        |
+  |   | 2. | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][1]]  |     | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][upgrade openedx version from dogwood to ginkgo]] | [[Fix back button functionality][ref]]  | Open   |   4 |   0 | [[https://github.com/vlead/vlabs-openedx-platform/milestone/1][ref]]    |
+  |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
+  |   |    |    |     | Total                                          |      |        |  29 |   0 |        |
   | ^ |    |    |     |                                                |      |        | est | act |        |
   |---+----+----+-----+------------------------------------------------+------+--------+-----+-----+--------|
-  #+TBLFM: @3$8=remote(tbl-rlz-pln-ml-1, $est)
-  #+TBLFM: @3$9=remote(tbl-rlz-pln-ml-1, $act)
+  #+TBLFM: @3$8=remote(tbl-rlz-pln-ml-2, $est)
+  #+TBLFM: @3$9=remote(tbl-rlz-pln-ml-2, $act)
+  #+TBLFM: @4$8=remote(tbl-rlz-pln-ml-1, $est)
+  #+TBLFM: @4$9=remote(tbl-rlz-pln-ml-1, $act)
   #+TBLFM: $est=vsum(@II+1..@-1)
   #+TBLFM: $act=vsum(@II+1..@-1)
 
@@ -51,3 +55,29 @@
 #+TBLFM: $act=vsum(@II+1..@-1)
 
 
+** ads deployment
+#+caption:  realization-plan-milestone-2
+#+name: tbl-rlz-pln-ml-2
+
+|---+-------+-----------------------+--------+----------+--------+-----------+--------+-------------+----------|
+|   | S.    | Tasks                 | Github | Expected | Actual | Estimated | Actual | Status      | Assignee |
+|   | NO    |                       | Issues | Effort   | Effort | Start,    | Start/ |             |          |
+|   |       |                       |        | (in      | (in    | End       | End    |             |          |
+|   |       |                       |        | person   | person | Dates     | Dates  |             |          |
+|   |       |                       |        | hours)   | hours) |           |        |             |          |
+|---+-------+-----------------------+--------+----------+--------+-----------+--------+-------------+----------|
+|   | 1.    | ADS deployment of     | [[https://github.com/vlead/vlabs-openedx-platform/issues/4][#4]]     | 15       |        |           |        | In progress |          |
+|   |       | Openedx platform      |        |          |        |           |        |             | Sripathi |
+|   |       | running gikngo        |        |          |        |           |        |             |          |
+|   |       | version               |        |          |        |           |        |             |          |
+|---+-------+-----------------------+--------+----------+--------+-----------+--------+-------------+----------|
+|   | 2.    | Test auto deployment  | [[https://github.com/vlead/vlabs-openedx-platform/issues/30][#30]]    | 10       |        |           |        | In progress |          |
+|   |       | steps of openedx      |        |          |        |           |        |             | Sripathi |
+|   |       | platform with vagrant |        |          |        |           |        |             |          |
+|   |       | machine               |        |          |        |           |        |             |          |
+|---+-------+-----------------------+--------+----------+--------+-----------+--------+-------------+----------|
+|   | Total |                       |        | 25       | 0      |           |        |             |          |
+| ^ |       |                       |        | est      | act    |           |        |             |          |
+|---+-------+-----------------------+--------+----------+--------+-----------+--------+-------------+----------|
+#+TBLFM: $est=vsum(@II+1..@-1)
+#+TBLFM: $act=vsum(@II+1..@-1)
