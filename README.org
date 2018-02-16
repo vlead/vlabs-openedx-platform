@@ -4,6 +4,8 @@
 * Setup development environment
   Follow [[src/deployment/index.org][documentation]] to setup the development environment
 * Post installation configuration
+  Following steps to be done after ADS deployment
+
   1. Configure feedback and analytics urls in
      =/edx/var/nginx/server-static/message.html=
      #+BEGIN_EXAMPLE
@@ -25,12 +27,7 @@
      ----
      #+END_EXAMPLE
 
-  3. Restart =edx= services
-     #+BEGIN_EXAMPLE
-     /edx/bin/supervisorctl restart edxapp:
-     #+END_EXAMPLE
-
-  4. Configure following variables at
+  3. Configure following variables at
      =/edx/app/edxapp/lms.env.json= and
      =/edx/app/edxapp/cms.env.json=
      #+BEGIN_EXAMPLE
@@ -43,5 +40,15 @@
      ----
      #+END_EXAMPLE
 
+  4. Restart =edx= services
+     #+BEGIN_EXAMPLE
+     /edx/bin/supervisorctl restart edxapp:
+     #+END_EXAMPLE
+
+  5. Access website
+     #+BEGIN_EXAMPLE
+     firefox http://openedx.vlabs.ac.in
+     #+END_EXAMPLE
+     
 
      
