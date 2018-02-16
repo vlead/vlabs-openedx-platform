@@ -59,7 +59,7 @@
           ],
           "post_build": [
             "rsync -avz ../build/code/deployment/message.html /edx/var/nginx/server-static/message.html",
-            "rsync -avz ../build/code/deployment/message.html /edx/var/nginx/server-static/utils.html",
+            "rsync -avz ../build/code/deployment/utils.html /edx/var/nginx/server-static/utils.html",
             "rsync -avz ../build/code/deployment/lms /edx/app/nginx/sites-available/lms",
             "rsync -avz ../build/code/deployment/decorators.py /edx/app/edxapp/edx-platform/common/djangoapps/third_party_auth/decorators.py",
             "rsync -avz ../build/code/deployment/main.html /edx/app/edxapp/edx-platform/lms/templates/main.html",

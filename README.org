@@ -30,5 +30,18 @@
      /edx/bin/supervisorctl restart edxapp:
      #+END_EXAMPLE
 
-  4. Configure email service
+  4. Configure following variables at
+     =/edx/app/edxapp/lms.env.json= and
+     =/edx/app/edxapp/cms.env.json=
+     #+BEGIN_EXAMPLE
+     -----
+     -----
+     "SITE_NAME": "openedx.vlabs.ac.in"
+     "PLATFORM_NAME": "Virtual Labs"
+     "DEFAULT_FROM_EMAIL": "registration@vlabs.ac.in"
+     ----
+     ----
+     #+END_EXAMPLE
+
+
      
