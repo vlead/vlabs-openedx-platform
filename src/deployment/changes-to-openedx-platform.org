@@ -697,6 +697,14 @@ from pipeline_mako import render_require_js_path_overrides
   /edx/bin/supervisorctl restart edxapp:
   #+END_EXAMPLE
 
+* Add =celery= user
+  Sometimes user registration functionality doesn't work by
+  doing following fixes the issue
+  #+BEGIN_SRC shell
+  rabbitmqctl add_user celery celery
+  rabbitmqctl set_permissions celery "." "." ".*"
+  service rabbitmq-server restart
+  #+END_SRC
 * Tangle
 ** main.html
 
