@@ -7,7 +7,8 @@
   Following steps to be done after ADS deployment
 
   1. Configure feedback and analytics urls in
-     =/edx/var/nginx/server-static/message.html=
+     =/edx/var/nginx/server-static/utils.html=
+
      #+BEGIN_EXAMPLE
      -----
      -----
@@ -18,7 +19,7 @@
      #+END_EXAMPLE
 
   2. Configure post message url in
-     =/edx/var/nginx/server-static/utils.html=
+     =/edx/var/nginx/server-static/message.html=
      #+BEGIN_EXAMPLE
      ----
      ----
